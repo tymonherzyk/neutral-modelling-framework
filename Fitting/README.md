@@ -3,6 +3,7 @@
 The fitting package facilitates the calibration of neutral models to single species relative abundance time seires with the purpose of production estimates for distinct model parameters. Within the current state two common neutral models can be calibrated:
 1. __Hubbell's purley neutral model__ [[1]](#1).
 2. __Sloan et al.'s near-neutral model__ [[2]](#2)
+
 Descriptions of these models are supplied at the associated references. Here the continous version of each model is calibrated. Mathematical derivations of these are provided in the thesis "_Towards a general theory within wastewater treatment: computational and experimental examples utilising fundamental laws to describe microbial community structure in wastewater treatment systems_". To produce parameter estimates maximum likelihood estimation is used. Once again refer to the previously given thesis for an in-depth mathematical explantion of this process.
 
 The calibration of these models is achieved using the architecture shown below:
