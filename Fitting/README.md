@@ -15,13 +15,14 @@ Each sheet holds input variables for the spefic script or function of the same n
 ![InputVariablesFitting (2)](https://github.com/user-attachments/assets/b15d3216-eb84-44a0-9861-1b6cd75848fe)
 Created in  https://BioRender.com_
 
-Variables _nt_,_eta_,_m_,_p_ and _alpha_ do not need to be defined for the package to operate. If these are left empty the pacakge will estimate them. Thus by providing values or leaving these empty the number and type of model parameters to be estimated can be selected. It is important to not that for any of these varibales left unknown associated _start_, _lower_ and _upper_ variables must be defined.
+Variables _nt_, _eta_, _m_, _p_ and _alpha_ do not need to be defined for the package to operate. If these are left empty the pacakge will estimate them. Thus by providing values or leaving these empty the number and type of model parameters to be estimated can be selected. It is important to note that for any of these varibales left unknown associated _start_, _lower_ and _upper_ variables must be defined.
 
 ## fitting.m
 This script acts as the sole executable within the fitting package and is tasked with:
 1. __Loading input variables from sheet _fitting_ within _fittingParameters.xlsx_.__
 2. __Importing desired data files selected by the user.__
 3. __Running the chosen function by the user (_hubellfit_, _hubbellsimpfit_, _sloanfit_, _sloansimpfit_).__
+4. __Saving results and log files__
 
 The first of these tasks is achieved through the section of code below:
 ```matlab
@@ -56,6 +57,45 @@ MainParameters.userFileTotal = length(MainParameters.userFileNames); %store tota
 ```
 where the inbuilt 'uigetfile' function opens a dialog box for users to select data files. Multiple data files can be selected at once.
 
+The execution of the chosen function is undertaken within the primary loop:
+```matlab
+for i = 1:MainParameters.userFileTotal %for number of runs
+    tstartRun = tic; %start timer and store date and time
+    dateTimeRun = datetime('now','TimeZone','local','Format','d-MMM-y HH:mm:ss');
+    fprintf('\nFILE %d OF %d STARTED \n',i,MainParameters.userFileTotal) %print start message 
+    loadDataFullPath = fullfile(MainParameters.userFilePath,MainParameters.userFileNames(i)); %Define data file load path
+    loadDataFullPath = string(loadDataFullPath);
+    if strcmpi('hubbellfit',MainParameters.function) %run function defined by user and pass parameters
+        [Results,dataFilename,Log] = hubbellfit(MainParameters,loadDataFullPath);
+    elseif strcmpi('hubbellsimpfit',MainParameters.function)
+        [Results,dataFilename,Log] = hubbellfit(MainParameters,loadDataFullPath);
+    elseif strcmpi('sloanfit',MainParameters.function)
+        [Results,dataFilename,Log] = sloanfit(MainParameters,loadDataFullPath);
+    elseif strcmpi('sloansimpfit',MainParameters.function)
+        [Results,dataFilename,Log] = sloanfit(MainParameters,loadDataFullPath);
+    end
+    tendRun = toc(tstartRun); %end timer
+```
 
+Within the function calling loop, four values of `function` are catered for. These are, _hubbellfit_, _hubbellfitsimp_, _sloanfit_ and _sloanfitsimp_. If `function` is equal to strings _hubbellfit_ or _hubbellfitsimp_ then the function _hubbellfit.m_ is executed. If `function` is equal to strings _sloanfit_ or _sloanfitsimp_ then the _sloanfit.m_ function is executed. The number of iterations of the function calling loop is defined by the number of datafiles selected by the user, stored in 'userFileTotal'. Function inputs are `MainParameters` and 'loadDataFullPath', and outputs are `Results`, `dataFilename` and `Log`.
 
-Within the function calling loop, four values of \textit{function} are catered for. These are, "hubbellfit", "hubbellfitsimp", "sloanfit" and "sloanfitsimp". If \textit{function} is equal to strings "hubbellfit" or "hubbellfitsimp" then the function hubbellfit.m is executed. If \textit{function} is equal to strings "sloanfit" or "sloanfitsimp" then the sloanfit.m function is executed. Similarly to sampling.m the number of iterations of the function calling loop is defined by \textit{userFileTotal} and both functions accept inputs of \textit{MainParameters} and \textit{userFileTotal}. Function outputs are consistent with that shown in figure \ref{simulation_code2}, where \textit{NS}, \textit{dataFilename} and \textit{Log} are returned. After the appropriate function is called, the handling of function outputs and the process of saving these are carried out using the same format previously defined in figure \ref{simulation_code3}, where field \textit{RunParameters} is appended as required.
+`Results` and 'Log' are saved using the inbuilt 'save' function as shown below:
+```matlab
+    saveDataFullPath = append(MainParameters.saveDataPath,dataFilename); %build full path for saving data
+    save(saveDataFullPath,'Results') %save data
+```
+```matlab
+    logFilename = sprintf('Log_%s',dataFilename); %build full path for saving data
+    saveLogFullPath = append(MainParameters.saveLogPath,logFilename);
+    Log.RunParameters.originalDataFilename = MainParameters.userFileNames(i);  %add additonal variables to log
+    Log.RunParameters.dataFilename = dataFilename;
+    Log.RunParameters.dataPath = MainParameters.saveDataPath;
+    Log.RunParameters.fixedParameters = extractBetween(dataFilename,'fixed','_T');
+    Log.RunParameters.logFilename = logFilename;
+    Log.RunParameters.logPath = MainParameters.saveLogPath;
+    Log.RunParameters.runtime = tendRun;
+    Log.RunParameters.datetime = dateTimeRun;
+    Log.MainParameters = MainParameters;
+    Log = orderfields(Log); %order log
+    save(saveLogFullPath,'Log') %save log
+```
