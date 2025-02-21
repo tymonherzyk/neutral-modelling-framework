@@ -12,7 +12,7 @@ This spreadsheet holds all user input variables wich must be defined for the pac
 
 
 Each sheet holds input variables for the spefic script or function of the same name. A full list of all variables and descriptions of these variables are provided below:
-![InputVariablesFitting (2)](https://github.com/user-attachments/assets/9a1cf4ca-c9fd-4213-8149-8ab9499985c5)
+![InputVariablesFitting (3)](https://github.com/user-attachments/assets/ac6562eb-7beb-4071-a4a8-5f00a37a843a)
 _Created in  https://BioRender.com_
 
 Variables _nt_,_eta_,_m_,_p_ and _alpha_ do not need to be defined for the package to operate. If these are left empty the pacakge will estimate them. Thus by providing values or leaving these empty the number and type of model parameters to be estimated can be selected. It is important to not that for any of these varibales left unknown associated _start_, _lower_ and _upper_ variables must be defined.
