@@ -1,7 +1,8 @@
 # Fitting
 ## Introduction
 The fitting package facilitates the calibration of neutral models to single species relative abundance time seires with the purpose of production estimates for distinct model parameters. Within the current state two common neutral models can be calibrated:
-1. Hubbell's purley neutral model [[Hubbell], 2001](#1).
+1. __Hubbell's purley neutral model__ [[1]](#1).
+2. __Sloan et al.'s near-neutral model__ [[2]](#2)
 
 ![Framework_architecture_fitting (1)](https://github.com/user-attachments/assets/f54ab39b-2233-4208-86d4-09eac0dd6dbb)
 Created in  https://BioRender.com_
@@ -114,4 +115,8 @@ Within the function calling loop, four values of `function` are catered for. The
 
 ## References
 <a id="1">[1]</a> 
-Hubbell, S. (2001). The Unified Neutral Theory of Biodiversity and Biogeography, Monographs in Population Biology (Vol. 32).
+Hubbell, S. (2001). The Unified Neutral Theory of Biodiversity and Biogeography, _Monographs in Population Biology_ (Vol. 32).
+
+<a id="2">[2]</a> 
+Sloan, W. T., Lunn, M., Woodcock, S., Head, I. M., Nee, S., & Curtis, T. P. (2006). Quantifying the roles of im-
+migration and chance in shaping prokaryote community structure, _Environmental Microbiology_, 8(4), 732–740. 
