@@ -1,5 +1,9 @@
 # Fitting
 ## Introduction
+
+![Framework_architecture_fitting](https://github.com/user-attachments/assets/4c933336-4790-4e7c-9666-fe65eea1bcf9)
+_Created in  https://BioRender.com_
+
 ## fitting.m
 This script acts as the sole executable within the fitting package and is tasked with:
 1. __Loading input variables from sheet _fitting_ within _fittingParameters.xlsx_.__
