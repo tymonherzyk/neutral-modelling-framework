@@ -111,7 +111,53 @@ Within the function calling loop, four values of `function` are catered for. The
 ```
 
 ## hubbellfit.m
+The aim of the _hubbellfit.m_ function is to return estimates for unknown parameters within the continuous version of Hubbell's neutral model using single species relative abundance time series. The transition of Hubbell's model from the discrete mathematics, to one where numerous replacement events can occur between data points, is demonstrated in the thesis written by Tymon Alexander Herzyk. The result is a stochastic differential equation (SDE) that defines the change in relative abundance data ($dx$), in terms of $N_T$, $\eta$, $m$, $p$, $x$ and $dt$. The full mathematical representation of this equation, alongside parameter definitions, is given in the previously mentioned thesis. Within _hubbellfit.m_ parameters $N_T$, $\eta$, $m$, and $p$ refer to variables `nt`, `eta`, `m`, and `p` respectively. $dx$, $x$, and $dt$ are captured in variables of the same name (`dx`, `x`, and `dt`).
 
+The first task achieved is loading input variables from the associated _hubbellsim_ spreadsheet. This is done using the code:
+```matlab
+importFilename = 'fittingParameters.xlsx'; %set import filename for loading parameters from user spreadsheet
+opts = detectImportOptions(importFilename); %set import settings for loading parameters from user spreadsheet
+opts = setvartype(opts,'char');
+opts.RowNamesRange = 'A2';
+opts.VariableNamesRange = 'B1';
+opts.DataRange = 'B2';
+opts.Sheet = 'hubbellfit';
+FunctionParametersTable = readtable(importFilename,opts); %load function parameters from user spreadsheet as table
+for i = 1:height(FunctionParametersTable) %change function parameters to correct data types
+    if strcmpi('number',FunctionParametersTable.Type{i}) 
+        FunctionParametersTable.Value{i} = sscanf(FunctionParametersTable.Value{i},'%f*');
+    end
+end
+FunctionParameters.fixednt = FunctionParametersTable.Value{1}; %store function parameters in data structure
+FunctionParameters.fixedeta = FunctionParametersTable.Value{2};
+FunctionParameters.fixedm = FunctionParametersTable.Value{3};
+FunctionParameters.fixedp = FunctionParametersTable.Value{4};
+FunctionParameters.startnt = FunctionParametersTable.Value{5};
+FunctionParameters.starteta = FunctionParametersTable.Value{6};
+FunctionParameters.startm = FunctionParametersTable.Value{7};
+FunctionParameters.startp = FunctionParametersTable.Value{8};
+FunctionParameters.lowernt = FunctionParametersTable.Value{9};
+FunctionParameters.lowereta = FunctionParametersTable.Value{10};
+FunctionParameters.lowerm = FunctionParametersTable.Value{11};
+FunctionParameters.lowerp = FunctionParametersTable.Value{12};
+FunctionParameters.uppernt = FunctionParametersTable.Value{13};
+FunctionParameters.uppereta = FunctionParametersTable.Value{14};
+FunctionParameters.upperm = FunctionParametersTable.Value{15};
+FunctionParameters.upperp = FunctionParametersTable.Value{16};
+FunctionParameters.funvalcheck = FunctionParametersTable.Value{17};
+FunctionParameters.display = FunctionParametersTable.Value{18};
+FunctionParameters.maxfunevals = FunctionParametersTable.Value{19};
+FunctionParameters.maxiter = FunctionParametersTable.Value{20};
+```
+where the values of `importfilename`, `opts.Sheet` refer to spreadsheet _fittingParameters.xlsx_ and sheet _hubbellfit_. Variables from this sheet are converted to correct data types and stored in relevant fields within `FunctionParameters`.
+
+Data array 'NS' is then loaded from the file defined by 'loadPath'. From 'NS' model data arrays 'x', 'dx' and 'dt' are calculated following the code:
+```matlab
+load(loadPath, 'NS'); %load data
+x = NS(1:end-1,1); %calculate x
+dx = NS(2:end,1) - NS(1:end-1,1); %calculate dx 
+dt = NS(2:end,2) - NS(1:end-1,2); %calculate dt
+```
 
 ## sloanfit.m
 
