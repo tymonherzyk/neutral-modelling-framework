@@ -4,6 +4,17 @@
 ![Framework_architecture_fitting](https://github.com/user-attachments/assets/4c933336-4790-4e7c-9666-fe65eea1bcf9)
 _Created in  https://BioRender.com_
 
+## fittingParameters.xlsx
+This spreadsheet holds all user input variables wich must be defined for the package to operate. It is made up of three sheets:
+* __fitting__
+* __hubbellfit__
+* __sloanfit__
+Each sheet holds input variables for the spefic script or function of the same name. A full list of all variables and descriptions of these variables are provided below:
+![InputVariablesFitting (1)](https://github.com/user-attachments/assets/bd319d54-5104-49d8-a93a-df17419459bd)
+_Created in  https://BioRender.com_
+
+Variables _nt_,_eta_,_m_,_p_ and _alpha_ do not need to be defined for the package to operate. If these are left empty the pacakge will estimate them. Thus by providing values or leaving these empty the number and type of model parameters to be estimated can be selected. It is important to not that for any of these varibales left unknown associated _start_, _lower_ and _upper_ variables must be defined.
+
 ## fitting.m
 This script acts as the sole executable within the fitting package and is tasked with:
 1. __Loading input variables from sheet _fitting_ within _fittingParameters.xlsx_.__
