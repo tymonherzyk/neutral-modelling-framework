@@ -3,9 +3,9 @@
 This framework was developed to facilitate the research presented in the thesis: "Towards a general theory within wastewater treatment: computational and experimental examples utilising fundamental laws to describe microbial community structure in wastewater treatment systems" written by Tymon Alexander Herzyk, submitted in fulfilment of the requirements for the Degree of Doctor of Philosophy in Civil Engineering, at the School of Engineering, College of Science and Engineering, University of Glasgow. The framework developed is shared here under the Creative Commons Attribution 4.0 International License (CC-BY) to offer transparency and allow others to make use of the framework developed for further research.
 
 The framework was tasked with producing relative abundance time series under different sampling regimes from differing sets of community structuring processes and with facilitating the calibration of common neutral models to these data sets with the purpose of producing estimates for distinct model parameters. The framework is split into three packages to achieve this:
-*simulation - simulates a relative abundance time series of a single species within a community using a chosen model.
-*sampling - samples single species relative abundace time series for a period and frequency chosen by the user.
-*fitting - fits a chosen model to single species relative abundace time series using maximum likelihood estimation to provide estimate of distinct model parameters.
+* simulation - simulates a relative abundance time series of a single species within a community using a chosen model.
+* sampling - samples single species relative abundace time series for a period and frequency chosen by the user.
+* fitting - fits a chosen model to single species relative abundace time series using maximum likelihood estimation to provide estimate of distinct model parameters.
 
 Code for each of these packages is provided in respective folders and descriptions of how each package operates is provided in relative README.md files. Instalation, user and developer guides are provided in the Guides folder. All scripts and functions within these packages were written using MATLAB version R2020b in accordance with the academic license provided by the University of Glasgow.
 
