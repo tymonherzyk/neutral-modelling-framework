@@ -79,7 +79,7 @@ for i = 1:MainParameters.userFileTotal %for number of runs
 
 Within the function calling loop, four values of `function` are catered for. These are, _hubbellfit_, _hubbellfitsimp_, _sloanfit_ and _sloanfitsimp_. If `function` is equal to strings _hubbellfit_ or _hubbellfitsimp_ then the function _hubbellfit.m_ is executed. If `function` is equal to strings _sloanfit_ or _sloanfitsimp_ then the _sloanfit.m_ function is executed. The number of iterations of the function calling loop is defined by the number of datafiles selected by the user, stored in 'userFileTotal'. Function inputs are `MainParameters` and 'loadDataFullPath', and outputs are `Results`, `dataFilename` and `Log`.
 
-`Results` and 'Log' are saved using the inbuilt 'save' function as shown below:
+`Results` and `Log` are saved using the inbuilt `save` function as shown below:
 ```matlab
     saveDataFullPath = append(MainParameters.saveDataPath,dataFilename); %build full path for saving data
     save(saveDataFullPath,'Results') %save data
@@ -99,3 +99,13 @@ Within the function calling loop, four values of `function` are catered for. The
     Log = orderfields(Log); %order log
     save(saveLogFullPath,'Log') %save log
 ```
+
+## hubbellfit.m
+
+
+## sloanfit.m
+
+
+## mlefit.m
+
+## mlecustomfit.m
