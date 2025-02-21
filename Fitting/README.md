@@ -2,9 +2,9 @@
 ## Introduction
 ## fitting.m
 This script acts as the sole executable within the fitting package and is tasked with:
-__1. Loading input variables from sheet _fitting_ within _fittingParameters.xlsx_.__
-__2. Importing desired data files selected by the user.__
-__3. Running the chosen function by the user (_hubellfit_, _hubbellsimpfit_, _sloanfit_, _sloansimpfit_).__
+1. __Loading input variables from sheet _fitting_ within _fittingParameters.xlsx_.__
+2. __Importing desired data files selected by the user.__
+3. __Running the chosen function by the user (_hubellfit_, _hubbellsimpfit_, _sloanfit_, _sloansimpfit_).__
 
 The first of these tasks is achieved through the section of code below:
 ```matlab
@@ -27,7 +27,7 @@ MainParameters.saveDataIdentifier = MainParametersTable.Value{3};
 MainParameters.saveDataPath = MainParametersTable.Value{4};
 MainParameters.saveLogPath = MainParametersTable.Value{5};
 ```
-Here `importFilename` referes to the input variable spreadsheet _fittingParameters_ with `opts.Sheet` defining the specific sheet _fitting_. 'opts' defines multiple options on how the data is loading, defining exact range of cells to import. All data is stored in 'MainParameters' data structure and converted to their respective data types. 
+Here `importFilename` referes to the input variable spreadsheet _fittingParameters_ with `opts.Sheet` defining the specific sheet _fitting_. `opts` defines multiple options on how the data is loading, defining exact range of cells to import. All data is stored in `MainParameters` data structure and converted to their respective data types. 
 
 Importing data files is handled by:
 ```matlab
