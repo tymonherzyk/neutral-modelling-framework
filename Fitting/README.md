@@ -3,9 +3,15 @@
 The fitting package facilitates the calibration of neutral models to single species relative abundance time seires with the purpose of production estimates for distinct model parameters. Within the current state two common neutral models can be calibrated:
 1. __Hubbell's purley neutral model__ [[1]](#1).
 2. __Sloan et al.'s near-neutral model__ [[2]](#2)
+Descriptions of these models are supplied at the associated references. Here the continous version of each model is calibrated. Mathematical derivations of these are provided in the thesis "_Towards a general theory within wastewater treatment: computational and experimental examples utilising fundamental laws to describe microbial community structure in wastewater treatment systems_". To produce parameter estimates maximum likelihood estimation is used. Once again refer to the previously given thesis for an in-depth mathematical explantion of this process.
 
+The calibration of these models is achieved using the architecture shown below:
 ![Framework_architecture_fitting (1)](https://github.com/user-attachments/assets/f54ab39b-2233-4208-86d4-09eac0dd6dbb)
 Created in  https://BioRender.com_
+
+Users define the model to be calibrated alongside operational parameters within the _fittingParameters.xlsx_ spreadsheet. The primary script can then be executed which facilitates the importing of user variables and prompts the user to select data files to use for the calibration. The function pertaining to the model chosen is then run to facilitate the calibration of the model and estimation of unknown parameters. Two files, results.m and log.m are returned by the pacakge, where results.m houses parameter estimates while log.m houses logged variables. These are saved in the location defined by the user. Below is an in-depth description of each of the files within this package. 
+
+__IMPORTANT NOTE: files mlefit.m and mlecustomfit.m are required for the package to operate. These are not provided here as they are subject to copyright from The Mathworks, Inc (Copyright 1993-2012 The MathWorks, Inc). Guides on how to make the edits nessesary and thus produce mlefit.m and mlecustomfit.m are provided here. Please refer to these before trying to operate the package.__
 
 ## fittingParameters.xlsx
 This spreadsheet holds all user input variables wich must be defined for the package to operate. It is made up of three sheets:
