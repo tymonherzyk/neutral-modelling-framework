@@ -1,8 +1,8 @@
 # Fitting
 ## Introduction
 
-![Framework_architecture_fitting](https://github.com/user-attachments/assets/4c933336-4790-4e7c-9666-fe65eea1bcf9)
-_Created in  https://BioRender.com_
+![Framework_architecture_fitting (1)](https://github.com/user-attachments/assets/f54ab39b-2233-4208-86d4-09eac0dd6dbb)
+Created in  https://BioRender.com_
 
 ## fittingParameters.xlsx
 This spreadsheet holds all user input variables wich must be defined for the package to operate. It is made up of three sheets:
