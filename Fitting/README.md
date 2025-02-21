@@ -1,5 +1,7 @@
 # Fitting
 ## Introduction
+The fitting package facilitates the calibration of neutral models to single species relative abundance time seires with the purpose of production estimates for distinct model parameters. Within the current state two common neutral models can be calibrated:
+1. Hubbell's purley neutral model [[Hubbell], 2001](#1).
 
 ![Framework_architecture_fitting (1)](https://github.com/user-attachments/assets/f54ab39b-2233-4208-86d4-09eac0dd6dbb)
 Created in  https://BioRender.com_
@@ -109,3 +111,7 @@ Within the function calling loop, four values of `function` are catered for. The
 ## mlefit.m
 
 ## mlecustomfit.m
+
+## References
+<a id="1">[1]</a> 
+Hubbell, S. (2001). The Unified Neutral Theory of Biodiversity and Biogeography, Monographs in Population Biology (Vol. 32).
