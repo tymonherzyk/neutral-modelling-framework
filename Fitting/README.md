@@ -9,6 +9,8 @@ This spreadsheet holds all user input variables wich must be defined for the pac
 * __fitting__
 * __hubbellfit__
 * __sloanfit__
+
+
 Each sheet holds input variables for the spefic script or function of the same name. A full list of all variables and descriptions of these variables are provided below:
 ![InputVariablesFitting (1)](https://github.com/user-attachments/assets/bd319d54-5104-49d8-a93a-df17419459bd)
 _Created in  https://BioRender.com_
