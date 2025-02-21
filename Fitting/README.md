@@ -2,11 +2,11 @@
 ## Introduction
 ## fitting.m
 This script acts as the sole executable within the fitting package and is tasked with:
-1. Loading input variables from sheet _fitting_ within _fittingParameters.xlsx_.
-2. Importing desired data files selected by the user.
-3. Running the chosen function by the user (_hubellfit_, _hubbellsimpfit_, _sloanfit_, _sloansimpfit_).
+__1. Loading input variables from sheet _fitting_ within _fittingParameters.xlsx_.__
+__2. Importing desired data files selected by the user.__
+__3. Running the chosen function by the user (_hubellfit_, _hubbellsimpfit_, _sloanfit_, _sloansimpfit_).__
 
-The first of these tasked is achieved through:
+The first of these tasks is achieved through the section of code below:
 ```matlab
 importFilename = 'fittingParameters.xlsx'; %set import filename for loading parameters from user spreadsheet
 opts = detectImportOptions(importFilename);  %set import settings for loading parameters from user spreadsheet
@@ -26,19 +26,19 @@ MainParameters.loadDataPath = MainParametersTable.Value{2};
 MainParameters.saveDataIdentifier = MainParametersTable.Value{3};
 MainParameters.saveDataPath = MainParametersTable.Value{4};
 MainParameters.saveLogPath = MainParametersTable.Value{5};
-fprintf(">>>> Select files for fitting \n")
+```
+Here `importFilename` referes to the input variable spreadsheet _fittingParameters_ with `opts.Sheet` defining the specific sheet _fitting_. 'opts' defines multiple options on how the data is loading, defining exact range of cells to import. All data is stored in 'MainParameters' data structure and converted to their respective data types. 
+
+Importing data files is handled by:
+```matlab
 [MainParameters.userFileNames,MainParameters.userFilePath] = uigetfile(MainParameters.loadDataPath,"Multiselect","on"); %open dialog box to select data files
 if ~iscell(MainParameters.userFileNames) %store filenames of selected data files
     MainParameters.userFileNames={MainParameters.userFileNames};
 end
 MainParameters.userFileTotal = length(MainParameters.userFileNames); %store total number of selected data files
-fprintf(">>>> Files Selected: \n")
-for i = 1:MainParameters.userFileTotal %print selected files to user
-    fprintf(">>>> %s \n", string(MainParameters.userFileNames(i)))
-end
 ```
+where the inbuilt 'uigetfile' function opens a dialog box for users to select data files. Multiple data files can be selected at once.
 
 
-loading input variables from , load input data file, run . Importing of desired input variables and data files is handled in the same way as shown in figures \ref{simulation_code1} and \ref{sampling_code1}. Once again the \textit{filename} and \textit{opts.Sheet} variables are altered to match the layout shown in figure \ref{framework_architecture}. These are therefore given the values "fitting.xlsx" and "fitting" respectively. The \textit{MainParameters} data structure is also adapted to reflect the parameters stored within the "fitting" sheet. The code for importing data files is identical to that presented in figure \ref{sampling_code1}.\\ 
 
 Within the function calling loop, four values of \textit{function} are catered for. These are, "hubbellfit", "hubbellfitsimp", "sloanfit" and "sloanfitsimp". If \textit{function} is equal to strings "hubbellfit" or "hubbellfitsimp" then the function hubbellfit.m is executed. If \textit{function} is equal to strings "sloanfit" or "sloanfitsimp" then the sloanfit.m function is executed. Similarly to sampling.m the number of iterations of the function calling loop is defined by \textit{userFileTotal} and both functions accept inputs of \textit{MainParameters} and \textit{userFileTotal}. Function outputs are consistent with that shown in figure \ref{simulation_code2}, where \textit{NS}, \textit{dataFilename} and \textit{Log} are returned. After the appropriate function is called, the handling of function outputs and the process of saving these are carried out using the same format previously defined in figure \ref{simulation_code3}, where field \textit{RunParameters} is appended as required.
