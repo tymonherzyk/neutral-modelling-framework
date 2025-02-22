@@ -113,7 +113,7 @@ Within the function calling loop, four values of `function` are catered for. The
 ## hubbellfit.m
 The aim of the _hubbellfit.m_ function is to return estimates for unknown parameters within the continuous version of Hubbell's neutral model using single species relative abundance time series. The transition of Hubbell's model from the discrete mathematics, to one where numerous replacement events can occur between data points, is demonstrated in the thesis written by Tymon Alexander Herzyk. The result is a stochastic differential equation (SDE) that defines the change in relative abundance data ($dx$), in terms of $N_T$, $\eta$, $m$, $p$, $x$ and $dt$. The full mathematical representation of this equation, alongside parameter definitions, is given in the previously mentioned thesis. Within _hubbellfit.m_ parameters $N_T$, $\eta$, $m$, and $p$ refer to variables `nt`, `eta`, `m`, and `p` respectively. $dx$, $x$, and $dt$ are captured in variables of the same name (`dx`, `x`, and `dt`).
 
-The first task achieved is loading input variables from the associated _hubbellsim_ spreadsheet. This is done using the code:
+The first task achieved is loading input variables from the associated _hubbellfit_ spreadsheet. This is done using the code:
 ```matlab
 importFilename = 'fittingParameters.xlsx'; %set import filename for loading parameters from user spreadsheet
 opts = detectImportOptions(importFilename); %set import settings for loading parameters from user spreadsheet
@@ -297,11 +297,233 @@ The series of `if` statements determines wheteher each model parameter has been 
 
 
 ## sloanfit.m
+The aim of the _sloanfit.m_ function is to return estimates for unknown parameters within the continuous version of Sloan et al.'s neutral model using single species relative abundance time series. The transition of Sloan's model from the discrete mathematics, to one where numerous replacement events can occur between data points, is demonstrated in the thesis written by Tymon Alexander Herzyk. The result is a stochastic differential equation (SDE) that defines the change in relative abundance data ($dx$), in terms of $N_T$, $\eta$, $m$, $p$, $\alpha$, $x$ and $dt$. The full mathematical representation of this equation, alongside parameter definitions, is given in the previously mentioned thesis. Within _sloanfit.m_ parameters $N_T$, $\eta$, $m$, $p$ and $\alpha$ refer to variables `nt`, `eta`, `m`, `p` and `alpha` respectively. $dx$, $x$, and $dt$ are captured in variables of the same name (`dx`, `x`, and `dt`).
 
+The first task achieved is loading input variables from the associated _sloanfit_ spreadsheet. This is done using the code:
+```matlab
+importFilename = 'fittingParameters.xlsx'; %set import filename for loading parameters from user spreadsheet
+opts = detectImportOptions(importFilename); %set import settings for loading parameters from user spreadsheet
+opts = setvartype(opts,'char');
+opts.RowNamesRange = 'A2';
+opts.VariableNamesRange = 'B1';
+opts.DataRange = 'B2';
+opts.Sheet = 'sloanfit';
+FunctionParametersTable = readtable(importFilename,opts); %load function parameters from user spreadsheet as table
+for i = 1:height(FunctionParametersTable) %change function parameters to correct data types
+    if strcmpi('number',FunctionParametersTable.Type{i}) 
+        FunctionParametersTable.Value{i} = sscanf(FunctionParametersTable.Value{i},'%f*');
+    end
+end
+FunctionParameters.fixednt = FunctionParametersTable.Value{1}; %store function parameters in data structure
+FunctionParameters.fixedeta = FunctionParametersTable.Value{2};
+FunctionParameters.fixedm = FunctionParametersTable.Value{3};
+FunctionParameters.fixedp = FunctionParametersTable.Value{4};
+FunctionParameters.fixedalpha = FunctionParametersTable.Value{5};
+FunctionParameters.startnt = FunctionParametersTable.Value{6};
+FunctionParameters.starteta = FunctionParametersTable.Value{7};
+FunctionParameters.startm = FunctionParametersTable.Value{8};
+FunctionParameters.startp = FunctionParametersTable.Value{9};
+FunctionParameters.startalpha = FunctionParametersTable.Value{10};
+FunctionParameters.lowernt = FunctionParametersTable.Value{11};
+FunctionParameters.lowereta = FunctionParametersTable.Value{12};
+FunctionParameters.lowerm = FunctionParametersTable.Value{13};
+FunctionParameters.lowerp = FunctionParametersTable.Value{14};
+FunctionParameters.loweralpha = FunctionParametersTable.Value{15};
+FunctionParameters.uppernt = FunctionParametersTable.Value{16};
+FunctionParameters.uppereta = FunctionParametersTable.Value{17};
+FunctionParameters.upperm = FunctionParametersTable.Value{18};
+FunctionParameters.upperp = FunctionParametersTable.Value{19};
+FunctionParameters.upperalpha = FunctionParametersTable.Value{20};
+FunctionParameters.funvalcheck = FunctionParametersTable.Value{21};
+FunctionParameters.display = FunctionParametersTable.Value{22};
+FunctionParameters.maxfunevals = FunctionParametersTable.Value{23};
+FunctionParameters.maxiter = FunctionParametersTable.Value{24};
+```
+where the values of `importfilename`, `opts.Sheet` refer to spreadsheet _fittingParameters.xlsx_ and sheet _sloanfit_. Variables from this sheet are converted to correct data types and stored in relevant fields within `FunctionParameters`.
 
-## mlefit.m
+Data array `NS` is then loaded from the file defined by `loadPath`. From `NS` model data arrays `x`, `dx` and `dt` are calculated following the code:
+```matlab
+load(loadPath, 'NS'); %load data
+x = NS(1:end-1,1); %calculate x
+dx = NS(2:end,1) - NS(1:end-1,1); %calculate dx 
+dt = NS(2:end,2) - NS(1:end-1,2); %calculate dt
+```
 
-## mlecustomfit.m
+Prior to fitting the model, a check is undertaken to only define starting values and limits for variables that are unknown. This is achieved using the `isempty` command as shown below. If this returns true (1) then bounds are defined from the corresponding input variables stored in `FunctionParameters`.
+```matlab
+i = 1; 
+if isempty(FunctionParameters.fixednt) == 1 %set starting values and limits for nt if unknown
+    fittingStart(i) = FunctionParameters.startnt;
+    fittingLowerBound(i) = FunctionParameters.lowernt;
+    fittingUpperBound(i) = FunctionParameters.uppernt;
+    i = i + 1;
+elseif isempty(FunctionParameters.fixednt) == 0
+end
+if isempty(FunctionParameters.fixedeta) == 1 %set starting values and limits for eta if unknown
+    fittingStart(i) = FunctionParameters.starteta;
+    fittingLowerBound(i) = FunctionParameters.lowereta;
+    fittingUpperBound(i) = FunctionParameters.uppereta;
+    i = i + 1;
+elseif isempty(FunctionParameters.fixedeta) == 0
+end
+if isempty(FunctionParameters.fixedm) == 1 %set starting values and limits for m if unknown
+    fittingStart(i) = FunctionParameters.startm;
+    fittingLowerBound(i) = FunctionParameters.lowerm;
+    fittingUpperBound(i) = FunctionParameters.upperm;
+    i = i + 1;
+elseif isempty(FunctionParameters.fixedm) == 0
+end
+if isempty(FunctionParameters.fixedp) == 1 %set starting values and limits for p if unknown
+    fittingStart(i) = FunctionParameters.startp;
+    fittingLowerBound(i) = FunctionParameters.lowerp;
+    fittingUpperBound(i) = FunctionParameters.upperp;
+    i = i + 1;
+elseif isempty(FunctionParameters.fixedp) == 0
+end
+if isempty(FunctionParameters.fixedalpha) == 1 %set starting values and limits for alpha if unknown
+    fittingStart(i) = FunctionParameters.startalpha;
+    fittingLowerBound(i) = FunctionParameters.loweralpha;
+    fittingUpperBound(i) = FunctionParameters.upperalpha;
+    i = i + 1;
+elseif isempty(FunctionParameters.fixedalpha) == 0
+end
+```
+
+To estimate the unknown model parameters, maximum likelihood estimation (MLE) is used by calling the function _mlefit.m_. The line of code below demonstrates the execution of this function:
+```matlab
+[phat,pci,nll,output] = mlefit(dx,'nloglf',@nloglf_none,'start',fittingStart,'LowerBound',fittingLowerBound,'UpperBound',fittingUpperBound,'Options',statset('FunValCheck',FunctionParameters.funvalcheck,'Display',FunctionParameters.display,'MaxFunEvals',FunctionParameters.maxfunevals,'MaxIter',FunctionParameters.maxiter)); %run maximum likelihood estimation
+```
+As illustrated, the function returns four output variables:
+1. `phat`: Final values for each unknown parameter.
+2. `pci`: Confidence intervals for the parameter estimates.
+3. `nll`: The minimum negative logliklihood value arrived at by the optimisation process.
+4. `output`: Optimisation output parameters.
+
+The function call also specifies five input fields, in addition to the data vector _dx_. These input fields are:
+1. `'nloglf'`: Specifies the custom negative log-likelihood function. Here, the function handle `@nloglf_none` is passed.
+2. `'start'`: Defines the starting values set for each unknown parameter within the optimisation process. This is passed the array `fittingStart`.
+3. `'LowerBound'`: Defines the lower limit for each unknown parameter within the optimisation process. This is passed the array `fittingLowerBound`
+4. `'UpperBound'`: Defines the upper limit for each unknown parameter within the optimisation process. This is passed the array `fittingUpperBound`
+5. `'Options': Specifies optimisation settings using `statset`. The fields within `Options` are:
+   - `'FunValCheck'`: Enables function value validation, set using the input variable funvalcheck stored in the FunctionParameters data structure.
+   - `'Display'`: Controls optimisation output display, set using the input variable display stored in the FunctionParameters data structure.
+   - `'MaxFunEvals'`: Maximum number of function evaluations, set using the input variable maxfunevals stored in the FunctionParameters data structure.
+   - `'MaxIter'`: Maximum number of iterations, set using the input variable maxiter stored in the FunctionParameters data structure.
+
+Here _mlefit.m_ is operated in such a way to minimise the custom negative loglikelihood function defined by `nloglf_none` This minimisation is performed by the MATLAB function `fminsearch`. This function performs minimisation using the Nelder-Mead simplex algorithm. A mathematical explanation of the exact algorithm used within `fminsearch` is given by Lagarias et al. (1998) [[3]](#3) . Further information can also be found within MATLAB documentation. 
+
+The custom negative loglikelihood function used to optimise model parameters is defined within the nested function `nlogf_none` provided at the end of  _sloanfit.m_. This function is provided below:
+```matlab
+function r = nloglf_none(params,data,cens,freq,trunc)
+j = 1;
+if isempty(FunctionParameters.fixednt) == 1 %define nt for estimation if unknown 
+    nt = params(j);
+    j = j + 1;
+elseif isempty(FunctionParameters.fixednt) == 0 %define nt as fixed value if known 
+    nt = FunctionParameters.fixednt;
+end
+if isempty(FunctionParameters.fixedeta) == 1 %define eta for estimation if unknown
+    eta = params(j);
+    j = j + 1;
+elseif isempty(FunctionParameters.fixedeta) == 0 %define eta as fixed value if known 
+    eta = FunctionParameters.fixedeta;
+end
+if isempty(FunctionParameters.fixedm) == 1 %define m for estimation if unknown 
+    m = params(j);
+    j = j + 1;
+elseif isempty(FunctionParameters.fixedm) == 0 %define m as fixed value if known 
+    m = FunctionParameters.fixedm;
+end
+if isempty(FunctionParameters.fixedp) == 1 %define p for estimation if unknown 
+    p = params(j);
+    j = j + 1;
+elseif isempty(FunctionParameters.fixedp) == 0 %define p as fixed value if known 
+    p = FunctionParameters.fixedp;
+end
+if isempty(FunctionParameters.fixedalpha) == 1 %define alpha for estimation if unknown 
+    alpha = params(j);
+    j = j + 1;
+elseif isempty(FunctionParameters.fixedalpha) == 0 %define alpha as fixed value if known 
+    alpha = FunctionParameters.fixedalpha;
+end
+if strcmpi('sloanfit',MainParameters.function) %if function selected is sloanfit
+    mu = ((m.*(p-x)+2*alpha*(1-m).*x.*(1-x))./nt).*(dt./eta); %define mu
+    sigma = sqrt((2.*x.*(1-x)+m.*(p-x).*(1-2.*x))./nt^2).*sqrt(dt./eta); %define sigma
+elseif strcmpi('sloansimpfit',MainParameters.function) %if function selected is hubbellsimpfit
+    mu = ((m.*(p-x)+2*alpha*(1-m).*x.*(1-x))./nt).*(dt./eta); %define mu
+    sigma = sqrt(2.*x.*(1-x)./nt^2).*sqrt(dt./eta); %define sigma
+end
+r = -sum(log(pdf('norm',data,mu,sigma))); %calculate negative log likelihood
+end
+```
+The function returns a single output `r` which holds the negative loglikelihood value calculated. This value is calculated as the negative sum of the log of the probability density function assumed to be normally distributed and defined by mean `mu` and variance `sigma` for data `dx`. Equations describing `mu` and `sigma` can be lifted directly from the SDE that governs the continuous version of Sloan et al.'s model. Two versions of these identities can be selected between, a truncated version and a non-truncated version. The choice of which version is used is made by the user within the definition of the `function` input variable. Both versions utilise the same model parameters. As any number of these parameters can be estimated, a check is written into the function to assign parameter values to either their input variable value stored in `FunctionParamaetrs` or the value assigned to them by the optimisation method stored in `params`. Variables `x` and `dt` hold the arrays assigned to them previously. Once `r` is calculated, it is passed back to the optimisation method to compare against previous iterations of this quantity. Searching of the minimum value of `r` is undertaken until the termination criteria and convergence criteria is reached, or until the number of iteration or function evaluations exceeds the maximum of these quantities as set by the user. 
+
+After the optimisation process has been completed, outputs from _mlefit.m_ are stored using the following code:
+```matlab
+i = 1;
+if isempty(FunctionParameters.fixednt) == 1 %store estimation result of nt
+    Results.nt = phat(i);
+    i = i + 1;
+elseif isempty(FunctionParameters.fixednt) == 0
+    Results.nt = '#';
+    fixedParameters = append(fixedParameters,'nt');
+end
+if isempty(FunctionParameters.fixedeta) == 1 %store estimation result of eta
+    Results.eta = phat(i);
+    i = i + 1;
+elseif isempty(FunctionParameters.fixedeta) == 0
+    Results.eta = '#';
+    fixedParameters = append(fixedParameters,'eta');
+end
+if isempty(FunctionParameters.fixedm) == 1 %store estimation result of m
+    Results.m = phat(i);
+    i = i + 1;
+elseif isempty(FunctionParameters.fixedm) == 0
+    Results.m = '#';
+    fixedParameters = append(fixedParameters,'m');
+end
+if isempty(FunctionParameters.fixedp) == 1 %store estimation result of p
+    Results.p = phat(i);
+    i = i + 1;
+elseif isempty(FunctionParameters.fixedp) == 0
+    Results.p = '#';
+    fixedParameters = append(fixedParameters,'p');
+end
+if isempty(FunctionParameters.fixedalpha) == 1 %store estimation result of alpha
+    Results.alpha = phat(i);
+    i = i + 1;
+elseif isempty(FunctionParameters.fixedalpha) == 0
+    Results.alpha = '#';
+    fixedParameters = append(fixedParameters,'alpha');
+end  
+Results.fval = nll; %store result of negative log likelihood value
+Results.funcCount = output.funcCount; %store result of function count
+Results.iterations = output.iterations; %store result of iterations
+Results.algorithm = output.algorithm; %store result of algorithm
+Results.message = output.message; %store result of message
+dataFilename = sprintf('%s%s%s_T%s_S%s.mat',originalDataIdentifier, MainParameters.saveDataIdentifier, fixedParameters,  originalTotalTime, originalTotalSamplePoints); %build new data filename
+Log.FunctionParameters = FunctionParameters; %store function parameters used in log file
+```
+The series of `if` statements determines wheteher each model parameter has been estimated or was fixed within the optimisation. The appropriate result is then stored in the `Results` data structure. Variables `nll`, `funcCount`, `iterations`, `algorithm` and `message` are also stored in `Results`. All variables stored in the `FunctionParameters` are passed into the `Log` data structure. `Results` and `Log` are passed back to _fitting.m_ on completion of _sloanfit.m_.
+
+## mlefit.m and mlecustomfit.m
+It is important to note that the maximum likelihood estimation of the unknown model parameters within _hubbellfit.m_ and _sloanfit.m_ is undertaken by the custom function _mlefit.m_. This, in turn, utilises _mlecustomfit.m_. Both functions are modifications made to the original MATLAB functions _mle.m_ and _mlecustom.m_ respectively, which are proprietary to MathWorks, Inc. The reason for making these modifications is to allow for the output of additional outputs from `fminsearch`. These outputs are the minimum negative loglikliehood value reached by the optimisation method stored in `nll` and the `output` data structure that holds information about the optimisation process. These modifications are intended for research and educational purposes only. __Functions _mlefit.m_ and _mlecustomfit.m_ must be created and saved in the same folder as _hubbellfit.m_ and _sloanfit.m_ for these to operate correctly__
+
+To create _mlefit.m_ a copy of _mle.m_ must first be made. _mle.m_ can be found in MATLAB program files with the stats toolbox. File path will look similar to C:\Program Files\MATLAB\R2020b\toolbox\stats\stats\. Save this copy as _mlefit.m_ within the Fitting package folder. In total only three lines are modified between _mle.m_ and _mlefit.m_. These are lines 1, 245 and 247. Line 1 referees to the function definition line, this is altered to include additional outputs `nll` and `output`. Lines 245 and 247 refer to calling the function associated with handling a user-defined distribution, these are modified to call _mlecustomfit.m_ instead of _mlecustom.m_ which passes the desired outputs. The modified lines of code are provided in order below:
+```matlab
+function [phat, pci, nll, output] = mlefit(data,varargin) %%edited to include nll and output as output vectors
+```
+```matlab
+phat = mlecustomfit(data,varargin{:}); %%edited to run mlecustomfit
+```
+```matlab
+[phat, pci, nll, output] = mlecustomfit(data,varargin{:}); %%edited to run mlecustomfit
+```
+
+To create _mlecustomfit.m_ a copy of _mlecustom.m_ must first be made. _mlecustom.m_ can be found in MATLAB program files with the stats toolbox. File path will look similar to C:\Program Files\MATLAB\R2020b\toolbox\stats\stats\private. Save this copy as _mlecustomfit.m_ within the Fitting package folder. In total only one line is modified between _mlecustom.m_ and _mlecustomfit.m_. This is line 1. Line 1 referees to the function definition line, this is altered to include additional outputs `nll` and `output`. The modified line of code is provided below:
+```matlab
+function [phat, pci, nll, output] = mlecustomfit(data,varargin) %%edited to include nll and output as output vectors
+```
 
 ## References
 <a id="1">[1]</a> 
