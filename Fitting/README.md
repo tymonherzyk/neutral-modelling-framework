@@ -55,7 +55,7 @@ MainParameters.saveDataIdentifier = MainParametersTable.Value{3};
 MainParameters.saveDataPath = MainParametersTable.Value{4};
 MainParameters.saveLogPath = MainParametersTable.Value{5};
 ```
-Here `importFilename` referes to the input variable spreadsheet _fittingParameters_ with `opts.Sheet` defining the specific sheet _fitting_. `opts` defines multiple options on how the data is loading, defining exact range of cells to import. All data is stored in `MainParameters` data structure and converted to their respective data types. 
+Here `importFilename` referes to the input variable spreadsheet _fittingParameters.xlsx_ with `opts.Sheet` defining the specific sheet _fitting_. `opts` defines multiple options on how the data is loading, defining exact range of cells to import. All data is stored in `MainParameters` data structure and converted to their respective data types. 
 
 Importing data files is handled by:
 ```matlab
