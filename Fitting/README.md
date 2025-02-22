@@ -200,7 +200,7 @@ As illustrated, the function returns four output variables:
 1. `phat`: Final values for each unknown parameter.
 2. `pci`: Confidence intervals for the parameter estimates.
 3. `nll`: The minimum negative logliklihood value arrived at by the optimisation process.
-4. `output`: Optimisation output parameters (parameter estimates).
+4. `output`: Optimisation output parameters.
 
 The function call also specifies five input fields, in addition to the data vector _dx_. These input fields are:
 1. `'nloglf'`: Specifies the custom negative log-likelihood function. Here, the function handle _@nloglf\_none_ is passed.
