@@ -159,6 +159,62 @@ dx = NS(2:end,1) - NS(1:end-1,1); %calculate dx
 dt = NS(2:end,2) - NS(1:end-1,2); %calculate dt
 ```
 
+Prior to fitting the model, a check is undertaken to only define starting values and limits for variables that are unknown. This is achieved using the `isempty` command as shown below. If this returns true (`1`) then bounds are defined from the corresponding input variables stored in `FunctionParameters`.
+```matlab
+i = 1; 
+if isempty(FunctionParameters.fixednt) == 1 %set starting values and limits for nt if unknown
+    fittingStart(i) = FunctionParameters.startnt;
+    fittingLowerBound(i) = FunctionParameters.lowernt;
+    fittingUpperBound(i) = FunctionParameters.uppernt;
+    i = i + 1;
+elseif isempty(FunctionParameters.fixednt) == 0
+end
+if isempty(FunctionParameters.fixedeta) == 1 %set starting values and limits for eta if unknown
+    fittingStart(i) = FunctionParameters.starteta;
+    fittingLowerBound(i) = FunctionParameters.lowereta;
+    fittingUpperBound(i) = FunctionParameters.uppereta;
+    i = i + 1;
+elseif isempty(FunctionParameters.fixedeta) == 0
+end
+if isempty(FunctionParameters.fixedm) == 1 %set starting values and limits for m if unknown
+    fittingStart(i) = FunctionParameters.startm;
+    fittingLowerBound(i) = FunctionParameters.lowerm;
+    fittingUpperBound(i) = FunctionParameters.upperm;
+    i = i + 1;
+elseif isempty(FunctionParameters.fixedm) == 0
+end
+if isempty(FunctionParameters.fixedp) == 1 %set starting values and limits for p if unknown
+    fittingStart(i) = FunctionParameters.startp;
+    fittingLowerBound(i) = FunctionParameters.lowerp;
+    fittingUpperBound(i) = FunctionParameters.upperp;
+    i = i + 1;
+elseif isempty(FunctionParameters.fixedp) == 0
+end
+```
+
+To estimate the unknown model parameters, maximum likelihood estimation (MLE) is used by calling the function _mlefit.m_. The line of code below demonstrates the execution of this function:
+```matlab
+[phat,pci,nll,output] = mlefit(dx,'nloglf',@nloglf_none,'start',fittingStart,'LowerBound',fittingLowerBound,'UpperBound',fittingUpperBound,'Options',statset('FunValCheck',FunctionParameters.funvalcheck,'Display',FunctionParameters.display,'MaxFunEvals',FunctionParameters.maxfunevals,'MaxIter',FunctionParameters.maxiter)); %run maximum likelihood estimation
+```
+As illustrated, the function returns four output variables:
+1. `phat`: Final values for each unknown parameter.
+2. `pci`: Confidence intervals for the parameter estimates.
+3. `nll`: The minimum negative logliklihood value arrived at by the optimisation process.
+4. `output`: Optimisation output parameters (parameter estimates).
+
+The function call also specifies five input fields, in addition to the data vector _dx_. These input fields are:
+1. `'nloglf'`: Specifies the custom negative log-likelihood function. Here, the function handle _@nloglf\_none_ is passed.
+2. `'start'`: Defines the starting values set for each unknown parameter within the optimisation process. This is passed the array `fittingStart`.
+3. `'LowerBound'`: Defines the lower limit for each unknown parameter within the optimisation process. This is passed the array `fittingLowerBound`
+4. `'UpperBound'`: Defines the upper limit for each unknown parameter within the optimisation process. This is passed the array `fittingUpperBound`
+5. `'Options': Specifies optimisation settings using \texttt{statset}. The fields within \texttt{Options} are:
+   - `'FunValCheck'`: Enables function value validation, set using the input variable funvalcheck stored in the FunctionParameters data structure.
+   - `'Display'`: Controls optimisation output display, set using the input variable display stored in the FunctionParameters data structure.
+   - `'MaxFunEvals'`: Maximum number of function evaluations, set using the input variable maxfunevals stored in the FunctionParameters data structure.
+   - `'MaxIter'`: Maximum number of iterations, set using the input variable maxiter stored in the FunctionParameters data structure.
+
+Here _mlefit.m_ is operated in such a way to minimise the custom negative loglikelihood function defined by `nloglf\_none` This minimisation is performed by the MATLAB function `fminsearch`. This function performs minimisation using the Nelder-Mead simplex algorithm. A mathematical explanation of the exact algorithm used within `fminsearch` is given by Lagarias et al. (\ref{}). Further information can also be found within MATLAB documentation.
+
 ## sloanfit.m
 
 
