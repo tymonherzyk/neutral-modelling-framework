@@ -27,3 +27,64 @@ This script acts as the sole executable within the fitting package and is tasked
 1. __Loading input variables from sheet _simulation_ within _simulationParameters.xlsx_.__
 3. __Running the chosen function by the user (_hubbellsim_, _sloansim_).__
 4. __Saving data and log files__
+
+The _simulation.m_ script begins by loading input variables from the simulation sheet within _simulationParameters.xlsx_. This is achieved through the block of code highlighted below:
+```matlab
+importFilename = 'simulationParameters.xlsx'; %set import filename for loading parameters from user spreadsheet
+opts = detectImportOptions(importFilename); %set import settings for loading parameters from user spreadsheet
+opts = setvartype(opts,'char');
+opts.RowNamesRange = 'A2';
+opts.VariableNamesRange = 'B1';
+opts.DataRange = 'B2';
+opts.Sheet = 'simulation';
+MainParametersTable = readtable(importFilename,opts); %load parameters from user spreadsheet as table
+for i = 1:height(MainParametersTable) %change parameters to correct data types
+    if strcmpi('number',MainParametersTable.Type{i}) 
+        MainParametersTable.Value{i} = sscanf(MainParametersTable.Value{i},'%f*');
+    end
+end
+MainParameters.function = MainParametersTable.Value{1}; %store parameters in local data structure  
+MainParameters.runs = MainParametersTable.Value{2};
+MainParameters.simtime = MainParametersTable.Value{3};
+MainParameters.seed = MainParametersTable.Value{4};
+MainParameters.generator = MainParametersTable.Value{5};
+MainParameters.saveDataIdentifier = MainParametersTable.Value{6};
+MainParameters.saveDataPath = MainParametersTable.Value{7};
+MainParameters.saveLogPath = MainParametersTable.Value{8};
+```
+Within this code the command `readtable` is used to import variables from the file designated in variable `importFilename`. Importing options defined within the 'opts' data structure. Under default conditions 'readtable' will import all values as string arrays, and thus number variables are converted to number data types through the 'sscanf' command.
+
+The main body of the _simulation.m_ script handles calling the function defined by the user. This is achieved using the following code:
+```matlab
+for i = 1:MainParameters.runs %for number of runs
+    fprintf('RUN %d OF %d STARTED \n',i,MainParameters.runs) %start timer and store date and time
+    tstartRun = tic; %start timer and store date and time
+    dateTimeRun = datetime('now','TimeZone','local','Format','d-MMM-y HH:mm:ss');
+    run = i;
+    if strcmpi('hubbellsim',MainParameters.function) %run function defined by user and pass parameters
+        [NS,dataFilename,Log] = hubbellsim(MainParameters,run);
+    elseif strcmpi('sloansim',MainParameters.function)
+        [NS,dataFilename,Log] = sloansim(MainParameters,run);
+    end
+```
+The function (`hubbellsim` or `sloansim`) can be executed multiple times as defined by the variable `runs`, thus multiple relaisations of the simulated dyanmics can be generated.
+
+Once the function has completed running, outputs `NS`, `dataFilename`, and `Log` are passed back to the workspace. The simulated data output `NS` is saved at the location provided by the input variable `saveDataPath`. Additional variables are appended to the `Log` data structure before this is saved. The location where the log file is saved is governed by the string stored within the `saveLogPath` variable. It is important to note that all saving is conducted within the function call loop. This ensures that data is saved after each function call, limiting the loss of data if the package crashes. The code used for saving outputs is provided below:
+```matlab
+    saveDataFullPath = append(MainParameters.saveDataPath,dataFilename); %build full path for saving data
+    save(saveDataFullPath,'NS') %save data
+```
+```matlab
+logFilename = sprintf('Log_%s',dataFilename); %build full path for saving data
+    saveLogFullPath = append(MainParameters.saveLogPath,logFilename);
+    Log.RunParameters.dataFilename = dataFilename; %add additonal variables to log
+    Log.RunParameters.dataPath = MainParameters.saveDataPath;
+    Log.RunParameters.logName = logFilename;
+    Log.RunParameters.logPath = MainParameters.saveLogPath;
+    Log.RunParameters.runtime = tendRun;
+    Log.RunParameters.datetime = dateTimeRun;
+    Log.RunParameters.run = i;
+    Log.MainParameters = MainParameters;
+    Log = orderfields(Log); %order log
+    save(saveLogFullPath,'Log') %save log
+```
