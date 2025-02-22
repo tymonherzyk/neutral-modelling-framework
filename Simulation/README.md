@@ -142,3 +142,13 @@ for i = 2:replaceNo+1 %for number of replacement events
     fprintf('>>>> Simulation Time: %.2f \n',timeTaken) %print current time step
 end
 ```
+
+All function variables alongside, the total number of individual replacements, the total number of data points and the generator seed used, are then stored within a new data structure named `Log` as shown below:
+```matlab
+Log.FunctionParameters = FunctionParameters; %store parameters for log
+Log.RunParameters.randomSeed = randomSeed;
+Log.RunParameters.totalReplacements = replaceNo;
+Log.RunParameters.totalSamplePoints = i;
+```
+
+The `Log` data structure, the data filename variable `dataFilename` and the `NS` array are passed back to the primary script after completion of the function.
