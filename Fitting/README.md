@@ -1,4 +1,4 @@
-# Fitting
+# The Fitting Package
 ## Introduction
 The fitting package facilitates the calibration of neutral models to single species relative abundance time seires with the purpose of production estimates for distinct model parameters. Within the current state two common neutral models can be calibrated:
 1. __Hubbell's purley neutral model__ [[1]](#1).
@@ -87,7 +87,7 @@ for i = 1:MainParameters.userFileTotal %for number of runs
     tendRun = toc(tstartRun); %end timer
 ```
 
-Within the function calling loop, four values of `function` are catered for. These are, _hubbellfit_, _hubbellfitsimp_, _sloanfit_ and _sloanfitsimp_. If `function` is equal to strings _hubbellfit_ or _hubbellfitsimp_ then the function _hubbellfit.m_ is executed. If `function` is equal to strings _sloanfit_ or _sloanfitsimp_ then the _sloanfit.m_ function is executed. The number of iterations of the function calling loop is defined by the number of datafiles selected by the user, stored in 'userFileTotal'. Function inputs are `MainParameters` and 'loadDataFullPath', and outputs are `Results`, `dataFilename` and `Log`.
+Within the function calling loop, four values of `function` are catered for. These are, _hubbellfit_, _hubbellfitsimp_, _sloanfit_ and _sloanfitsimp_. If `function` is equal to `'hubbellfit'` or `'hubbellfitsimp'` then the function _hubbellfit.m_ is executed. If `function` is equal to `'sloanfit'` or `'sloanfitsimp'` then the _sloanfit.m_ function is executed. The number of iterations of the function calling loop is defined by the number of datafiles selected by the user, stored in 'userFileTotal'. Function inputs are `MainParameters` and 'loadDataFullPath', and outputs are `Results`, `dataFilename` and `Log`.
 
 `Results` and `Log` are saved using the inbuilt `save` function as shown below:
 ```matlab
@@ -151,7 +151,7 @@ FunctionParameters.maxiter = FunctionParametersTable.Value{20};
 ```
 where the values of `importfilename`, `opts.Sheet` refer to spreadsheet _fittingParameters.xlsx_ and sheet _hubbellfit_. Variables from this sheet are converted to correct data types and stored in relevant fields within `FunctionParameters`.
 
-Data array 'NS' is then loaded from the file defined by 'loadPath'. From 'NS' model data arrays 'x', 'dx' and 'dt' are calculated following the code:
+Data array `NS` is then loaded from the file defined by `loadPath`. From `NS` model data arrays `x`, `dx` and `dt` are calculated following the code:
 ```matlab
 load(loadPath, 'NS'); %load data
 x = NS(1:end-1,1); %calculate x
@@ -159,7 +159,7 @@ dx = NS(2:end,1) - NS(1:end-1,1); %calculate dx
 dt = NS(2:end,2) - NS(1:end-1,2); %calculate dt
 ```
 
-Prior to fitting the model, a check is undertaken to only define starting values and limits for variables that are unknown. This is achieved using the `isempty` command as shown below. If this returns true (`1`) then bounds are defined from the corresponding input variables stored in `FunctionParameters`.
+Prior to fitting the model, a check is undertaken to only define starting values and limits for variables that are unknown. This is achieved using the `isempty` command as shown below. If this returns true (1) then bounds are defined from the corresponding input variables stored in `FunctionParameters`.
 ```matlab
 i = 1; 
 if isempty(FunctionParameters.fixednt) == 1 %set starting values and limits for nt if unknown
@@ -203,17 +203,98 @@ As illustrated, the function returns four output variables:
 4. `output`: Optimisation output parameters.
 
 The function call also specifies five input fields, in addition to the data vector _dx_. These input fields are:
-1. `'nloglf'`: Specifies the custom negative log-likelihood function. Here, the function handle _@nloglf\_none_ is passed.
+1. `'nloglf'`: Specifies the custom negative log-likelihood function. Here, the function handle `@nloglf_none` is passed.
 2. `'start'`: Defines the starting values set for each unknown parameter within the optimisation process. This is passed the array `fittingStart`.
 3. `'LowerBound'`: Defines the lower limit for each unknown parameter within the optimisation process. This is passed the array `fittingLowerBound`
 4. `'UpperBound'`: Defines the upper limit for each unknown parameter within the optimisation process. This is passed the array `fittingUpperBound`
-5. `'Options': Specifies optimisation settings using \texttt{statset}. The fields within \texttt{Options} are:
+5. `'Options': Specifies optimisation settings using `statset`. The fields within `Options` are:
    - `'FunValCheck'`: Enables function value validation, set using the input variable funvalcheck stored in the FunctionParameters data structure.
    - `'Display'`: Controls optimisation output display, set using the input variable display stored in the FunctionParameters data structure.
    - `'MaxFunEvals'`: Maximum number of function evaluations, set using the input variable maxfunevals stored in the FunctionParameters data structure.
    - `'MaxIter'`: Maximum number of iterations, set using the input variable maxiter stored in the FunctionParameters data structure.
 
-Here _mlefit.m_ is operated in such a way to minimise the custom negative loglikelihood function defined by `nloglf\_none` This minimisation is performed by the MATLAB function `fminsearch`. This function performs minimisation using the Nelder-Mead simplex algorithm. A mathematical explanation of the exact algorithm used within `fminsearch` is given by Lagarias et al. (\ref{}). Further information can also be found within MATLAB documentation.
+Here _mlefit.m_ is operated in such a way to minimise the custom negative loglikelihood function defined by `nloglf_none` This minimisation is performed by the MATLAB function `fminsearch`. This function performs minimisation using the Nelder-Mead simplex algorithm. A mathematical explanation of the exact algorithm used within `fminsearch` is given by Lagarias et al. (1998) [[3]](#3) . Further information can also be found within MATLAB documentation. 
+
+The custom negative loglikelihood function used to optimise model parameters is defined within the nested function `nlogf_none` provided at the end of  _hubbellfit.m_. This function is provided below:
+```matlab
+    function r = nloglf_none(params,data,cens,freq,trunc) %define function
+j = 1;
+if isempty(FunctionParameters.fixednt) == 1 %define nt for estimation if unknown 
+    nt = params(j);
+    j = j + 1;
+elseif isempty(FunctionParameters.fixednt) == 0 %define nt as fixed value if known 
+    nt = FunctionParameters.fixednt;
+end
+if isempty(FunctionParameters.fixedeta) == 1 %define eta for estimation if unknown 
+    eta = params(j);
+    j = j + 1;
+elseif isempty(FunctionParameters.fixedeta) == 0 %define eta as fixed value if known 
+    eta = FunctionParameters.fixedeta;
+end
+if isempty(FunctionParameters.fixedm) == 1 %define m for estimation if unknown 
+    m = params(j);
+    j = j + 1;
+elseif isempty(FunctionParameters.fixedm) == 0 %define m as fixed value if known 
+    m = FunctionParameters.fixedm;
+end
+if isempty(FunctionParameters.fixedp) == 1 %define p for estimation if unknown 
+    p = params(j);
+    j = j + 1;
+elseif isempty(FunctionParameters.fixedp) == 0 %define p as fixed value if known 
+    p = FunctionParameters.fixedp;
+end
+if strcmpi('hubbellfit',MainParameters.function) %if function selected is hubbellfit
+    mu = (m.*(p-x)./nt).*(dt./eta); %define mu
+    sigma = sqrt((2.*x.*(1-x)+m.*(p-x).*(1-2.*x))./nt^2).*sqrt(dt./eta); %define sigma
+elseif strcmpi('hubbellsimpfit',MainParameters.function) %if function selected is hubbellsimpfit
+    mu = (m.*(p-x)./nt).*(dt./eta); %define mu
+    sigma = sqrt(2.*x.*(1-x)./nt^2).*sqrt(dt./eta); %define sigma
+end
+r = -sum(log(pdf('norm',data,mu,sigma))); %calculate negative log likelihood
+end
+```
+The function returns a single output `r` which holds the negative loglikelihood value calculated. This value is calculated as the negative sum of the log of the probability density function assumed to be normally distributed and defined by mean `mu` and variance `sigma` for data `dx`. Equations describing `mu` and `sigma` can be lifted directly from the SDE that governs the continuous version of Hubbell's model. Two versions of these identities can be selected between, a truncated version and a non-truncated version. The choice of which version is used is made by the user within the definition of the `function` input variable. Both versions utilise the same model parameters. As any number of these parameters can be estimated, a check is written into the function to assign parameter values to either their input variable value stored in `FunctionParamaetrs` or the value assigned to them by the optimisation method stored in `params`. Variables `x` and `dt` hold the arrays assigned to them previously. Once `r` is calculated, it is passed back to the optimisation method to compare against previous iterations of this quantity. Searching of the minimum value of `r` is undertaken until the termination criteria and convergence criteria is reached, or until the number of iteration or function evaluations exceeds the maximum of these quantities as set by the user. 
+
+After the optimisation process has been completed, outputs from _mlefit.m_ are stored using the following code:
+```matlab
+if isempty(FunctionParameters.fixednt) == 1 %store estimation result of nt
+    Results.nt = phat(i);
+    i = i + 1;
+elseif isempty(FunctionParameters.fixednt) == 0
+    Results.nt = '#';
+    fixedParameters = append(fixedParameters,'nt');
+end
+if isempty(FunctionParameters.fixedeta) == 1 %store estimation result of eta
+    Results.eta = phat(i);
+    i = i + 1;
+elseif isempty(FunctionParameters.fixedeta) == 0
+    Results.eta = '#';
+    fixedParameters = append(fixedParameters,'eta');
+end
+if isempty(FunctionParameters.fixedm) == 1 %store estimation result of m
+    Results.m = phat(i);
+    i = i + 1;
+elseif isempty(FunctionParameters.fixedm) == 0
+    Results.m = '#';
+    fixedParameters = append(fixedParameters,'m');
+end
+if isempty(FunctionParameters.fixedp) == 1 %store estimation result of p
+    Results.p = phat(i);
+    i = i + 1;
+elseif isempty(FunctionParameters.fixedp) == 0
+    Results.p = '#';
+    fixedParameters = append(fixedParameters,'p');
+end  
+Results.fval = nll; %store result of negative log likelihood value
+Results.funcCount = output.funcCount; %store result of function count
+Results.iterations = output.iterations; %store result of iterations
+Results.algorithm = output.algorithm; %store result of algorithm
+Results.message = output.message; %store result of message
+dataFilename = sprintf('%s%s%s_T%s_S%s.mat',originalDataIdentifier, MainParameters.saveDataIdentifier, fixedParameters,  originalTotalTime, originalTotalSamplePoints); %build new data filename
+Log.FunctionParameters = FunctionParameters; %store function parameters used in log file
+```
+The series of `if` statements determines wheteher each model parameter has been estimated or was fixed within the optimisation. The appropriate result is then stored in the `Results` data structure. Variables `nll`, `funcCount`, `iterations`, `algorithm` and `message` are also stored in `Results`. All variables stored in the `FunctionParameters` are passed into the `Log` data structure. `Results` and `Log` are passed back to _fitting.m_ on completion of _hubbellfit.m_.
+
 
 ## sloanfit.m
 
@@ -229,3 +310,6 @@ Hubbell, S. (2001). The Unified Neutral Theory of Biodiversity and Biogeography,
 <a id="2">[2]</a> 
 Sloan, W. T., Lunn, M., Woodcock, S., Head, I. M., Nee, S., & Curtis, T. P. (2006). Quantifying the roles of im-
 migration and chance in shaping prokaryote community structure, _Environmental Microbiology_, 8(4), 732–740. 
+
+<a id="3">[3]</a> 
+Lagarias, J. C., J. A. Reeds, M. H. Wright, and P. E. Wright. Convergence Properties of the Nelder-Mead Simplex Method in Low Dimensions. _SIAM Journal of Optimization._ Vol. 9, Number 1, 1998, pp. 112–147
