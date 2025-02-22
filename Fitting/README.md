@@ -15,13 +15,13 @@ Users define the model to be calibrated alongside operational parameters within 
 __IMPORTANT NOTE: files _mlefit.m_ and _mlecustomfit.m_ are required for the package to operate. These are not provided here as they are subject to copyright from The Mathworks, Inc (Copyright 1993-2012 The MathWorks, Inc). Instructions on how to make these files are provided towards the end of the README. Please refer to these before trying to operate the package.__
 
 ## fittingParameters.xlsx
-This spreadsheet holds all user input variables wich must be defined for the package to operate. It is made up of three sheets:
+This spreadsheet holds all user input variables which must be defined for the package to operate. It is made up of three sheets:
 * __fitting__
 * __hubbellfit__
 * __sloanfit__
 
 
-Each sheet holds input variables for the spefic script or function of the same name. A full list of all variables and descriptions of these variables are provided below:
+Each sheet holds input variables for the specific script or function of the same name. A full list of all variables and descriptions of these variables are provided below:
 ![InputVariablesFitting (2)](https://github.com/user-attachments/assets/b15d3216-eb84-44a0-9861-1b6cd75848fe)
 Created in  https://BioRender.com_
 
@@ -65,7 +65,7 @@ if ~iscell(MainParameters.userFileNames) %store filenames of selected data files
 end
 MainParameters.userFileTotal = length(MainParameters.userFileNames); %store total number of selected data files
 ```
-where the inbuilt 'uigetfile' function opens a dialog box for users to select data files. Multiple data files can be selected at once.
+where the inbuilt `uigetfile` function opens a dialog box for users to select data files. Multiple data files can be selected at once.
 
 The execution of the chosen function is undertaken within the primary loop:
 ```matlab
@@ -87,7 +87,7 @@ for i = 1:MainParameters.userFileTotal %for number of runs
     tendRun = toc(tstartRun); %end timer
 ```
 
-Within the function calling loop, four values of `function` are catered for. These are, _hubbellfit_, _hubbellfitsimp_, _sloanfit_ and _sloanfitsimp_. If `function` is equal to `'hubbellfit'` or `'hubbellfitsimp'` then the function _hubbellfit.m_ is executed. If `function` is equal to `'sloanfit'` or `'sloanfitsimp'` then the _sloanfit.m_ function is executed. The number of iterations of the function calling loop is defined by the number of datafiles selected by the user, stored in 'userFileTotal'. Function inputs are `MainParameters` and 'loadDataFullPath', and outputs are `Results`, `dataFilename` and `Log`.
+Within this loop, four values of `function` are catered for. These are, `'hubbellfit'`, `'hubbellfitsimp'`, `'sloanfit'` and `'sloanfitsimp'`. If `function` is equal to `'hubbellfit'` or `'hubbellfitsimp'` then the function _hubbellfit.m_ is executed. If `function` is equal to `'sloanfit'` or `'sloanfitsimp'` then the _sloanfit.m_ function is executed. The number of iterations of the loop is defined by the number of datafiles selected by the user, stored in `userFileTotal`. Function inputs are `MainParameters` and 'loadDataFullPath', and outputs are `Results`, `dataFilename` and `Log`.
 
 `Results` and `Log` are saved using the inbuilt `save` function as shown below:
 ```matlab
@@ -151,7 +151,7 @@ FunctionParameters.maxiter = FunctionParametersTable.Value{20};
 ```
 where the values of `importfilename`, `opts.Sheet` refer to spreadsheet _fittingParameters.xlsx_ and sheet _hubbellfit_. Variables from this sheet are converted to correct data types and stored in relevant fields within `FunctionParameters`.
 
-Data array `NS` is then loaded from the file defined by `loadPath`. From `NS` model data arrays `x`, `dx` and `dt` are calculated following the code:
+Data array `NS` is then loaded from the file defined by `loadPath`. From `NS` data arrays `x`, `dx` and `dt` are calculated following the code:
 ```matlab
 load(loadPath, 'NS'); %load data
 x = NS(1:end-1,1); %calculate x
@@ -159,7 +159,7 @@ dx = NS(2:end,1) - NS(1:end-1,1); %calculate dx
 dt = NS(2:end,2) - NS(1:end-1,2); %calculate dt
 ```
 
-Prior to fitting the model, a check is undertaken to only define starting values and limits for variables that are unknown. This is achieved using the `isempty` command as shown below. If this returns true (1) then bounds are defined from the corresponding input variables stored in `FunctionParameters`.
+Prior to fitting the model, a check is undertaken to only define starting values and limits for variables that are unknown. This is achieved using the `isempty` command as shown below. If this returns true (1), then bounds are defined from the corresponding input variables stored in `FunctionParameters`. The code facilitating this is:
 ```matlab
 i = 1; 
 if isempty(FunctionParameters.fixednt) == 1 %set starting values and limits for nt if unknown
@@ -192,7 +192,7 @@ elseif isempty(FunctionParameters.fixedp) == 0
 end
 ```
 
-To estimate the unknown model parameters, maximum likelihood estimation (MLE) is used by calling the function _mlefit.m_. The line of code below demonstrates the execution of this function:
+To estimate the unknown model parameters, maximum likelihood estimation (MLE) is used by calling the function _mlefit.m_. The line of code below highlights this call:
 ```matlab
 [phat,pci,nll,output] = mlefit(dx,'nloglf',@nloglf_none,'start',fittingStart,'LowerBound',fittingLowerBound,'UpperBound',fittingUpperBound,'Options',statset('FunValCheck',FunctionParameters.funvalcheck,'Display',FunctionParameters.display,'MaxFunEvals',FunctionParameters.maxfunevals,'MaxIter',FunctionParameters.maxiter)); %run maximum likelihood estimation
 ```
@@ -202,16 +202,16 @@ As illustrated, the function returns four output variables:
 3. `nll`: The minimum negative logliklihood value arrived at by the optimisation process.
 4. `output`: Optimisation output parameters.
 
-The function call also specifies five input fields, in addition to the data vector _dx_. These input fields are:
+The function call also specifies five input fields, in addition to the data vector `dx`. These input fields are:
 1. `'nloglf'`: Specifies the custom negative log-likelihood function. Here, the function handle `@nloglf_none` is passed.
 2. `'start'`: Defines the starting values set for each unknown parameter within the optimisation process. This is passed the array `fittingStart`.
 3. `'LowerBound'`: Defines the lower limit for each unknown parameter within the optimisation process. This is passed the array `fittingLowerBound`
 4. `'UpperBound'`: Defines the upper limit for each unknown parameter within the optimisation process. This is passed the array `fittingUpperBound`
-5. `'Options': Specifies optimisation settings using `statset`. The fields within `Options` are:
-   - `'FunValCheck'`: Enables function value validation, set using the input variable funvalcheck stored in the FunctionParameters data structure.
-   - `'Display'`: Controls optimisation output display, set using the input variable display stored in the FunctionParameters data structure.
-   - `'MaxFunEvals'`: Maximum number of function evaluations, set using the input variable maxfunevals stored in the FunctionParameters data structure.
-   - `'MaxIter'`: Maximum number of iterations, set using the input variable maxiter stored in the FunctionParameters data structure.
+5. `'Options'`: Specifies optimisation settings using `statset`. The fields within `Options` defined are:
+   - `'FunValCheck'`: Enables function value validation, set using the input variable `funvalcheck` stored in `FunctionParameters`.
+   - `'Display'`: Controls optimisation output display, set using the input variable `display stored in `FunctionParameters`.
+   - `'MaxFunEvals'`: Maximum number of function evaluations, set using the input variable `maxfunevals` stored in `FunctionParameters`.
+   - `'MaxIter'`: Maximum number of iterations, set using the input variable `maxiter` stored in `FunctionParameters`.
 
 Here _mlefit.m_ is operated in such a way to minimise the custom negative loglikelihood function defined by `nloglf_none` This minimisation is performed by the MATLAB function `fminsearch`. This function performs minimisation using the Nelder-Mead simplex algorithm. A mathematical explanation of the exact algorithm used within `fminsearch` is given by Lagarias et al. (1998) [[3]](#3) . Further information can also be found within MATLAB documentation. 
 
@@ -293,7 +293,7 @@ Results.message = output.message; %store result of message
 dataFilename = sprintf('%s%s%s_T%s_S%s.mat',originalDataIdentifier, MainParameters.saveDataIdentifier, fixedParameters,  originalTotalTime, originalTotalSamplePoints); %build new data filename
 Log.FunctionParameters = FunctionParameters; %store function parameters used in log file
 ```
-The series of `if` statements determines wheteher each model parameter has been estimated or was fixed within the optimisation. The appropriate result is then stored in the `Results` data structure. Variables `nll`, `funcCount`, `iterations`, `algorithm` and `message` are also stored in `Results`. All variables stored in the `FunctionParameters` are passed into the `Log` data structure. `Results` and `Log` are passed back to _fitting.m_ on completion of _hubbellfit.m_.
+The series of `if` statements determines wheteher each model parameter has been estimated or was fixed within the optimisation. The appropriate result is then stored in `Results`. Variables `nll`, `funcCount`, `iterations`, `algorithm` and `message` are also stored in `Results`. All variables stored in the `FunctionParameters` are passed into the `Log` data structure. `Results` and `Log` are passed back to _fitting.m_ on completion of _hubbellfit.m_.
 
 
 ## sloanfit.m
@@ -389,7 +389,7 @@ elseif isempty(FunctionParameters.fixedalpha) == 0
 end
 ```
 
-To estimate the unknown model parameters, maximum likelihood estimation (MLE) is used by calling the function _mlefit.m_. The line of code below demonstrates the execution of this function:
+To estimate the unknown model parameters, maximum likelihood estimation (MLE) is used by calling the function _mlefit.m_. The line of code below highlights this call:
 ```matlab
 [phat,pci,nll,output] = mlefit(dx,'nloglf',@nloglf_none,'start',fittingStart,'LowerBound',fittingLowerBound,'UpperBound',fittingUpperBound,'Options',statset('FunValCheck',FunctionParameters.funvalcheck,'Display',FunctionParameters.display,'MaxFunEvals',FunctionParameters.maxfunevals,'MaxIter',FunctionParameters.maxiter)); %run maximum likelihood estimation
 ```
@@ -399,16 +399,16 @@ As illustrated, the function returns four output variables:
 3. `nll`: The minimum negative logliklihood value arrived at by the optimisation process.
 4. `output`: Optimisation output parameters.
 
-The function call also specifies five input fields, in addition to the data vector _dx_. These input fields are:
+The function call also specifies five input fields, in addition to the data vector `dx`. These input fields are:
 1. `'nloglf'`: Specifies the custom negative log-likelihood function. Here, the function handle `@nloglf_none` is passed.
 2. `'start'`: Defines the starting values set for each unknown parameter within the optimisation process. This is passed the array `fittingStart`.
 3. `'LowerBound'`: Defines the lower limit for each unknown parameter within the optimisation process. This is passed the array `fittingLowerBound`
 4. `'UpperBound'`: Defines the upper limit for each unknown parameter within the optimisation process. This is passed the array `fittingUpperBound`
-5. `'Options': Specifies optimisation settings using `statset`. The fields within `Options` are:
-   - `'FunValCheck'`: Enables function value validation, set using the input variable funvalcheck stored in the FunctionParameters data structure.
-   - `'Display'`: Controls optimisation output display, set using the input variable display stored in the FunctionParameters data structure.
-   - `'MaxFunEvals'`: Maximum number of function evaluations, set using the input variable maxfunevals stored in the FunctionParameters data structure.
-   - `'MaxIter'`: Maximum number of iterations, set using the input variable maxiter stored in the FunctionParameters data structure.
+5. `'Options'`: Specifies optimisation settings using `statset`. The fields within `Options` defined are:
+   - `'FunValCheck'`: Enables function value validation, set using the input variable `funvalcheck` stored in `FunctionParameters`.
+   - `'Display'`: Controls optimisation output display, set using the input variable `display stored in `FunctionParameters`.
+   - `'MaxFunEvals'`: Maximum number of function evaluations, set using the input variable `maxfunevals` stored in `FunctionParameters`.
+   - `'MaxIter'`: Maximum number of iterations, set using the input variable `maxiter` stored in `FunctionParameters`.
 
 Here _mlefit.m_ is operated in such a way to minimise the custom negative loglikelihood function defined by `nloglf_none` This minimisation is performed by the MATLAB function `fminsearch`. This function performs minimisation using the Nelder-Mead simplex algorithm. A mathematical explanation of the exact algorithm used within `fminsearch` is given by Lagarias et al. (1998) [[3]](#3) . Further information can also be found within MATLAB documentation. 
 
@@ -504,12 +504,12 @@ Results.message = output.message; %store result of message
 dataFilename = sprintf('%s%s%s_T%s_S%s.mat',originalDataIdentifier, MainParameters.saveDataIdentifier, fixedParameters,  originalTotalTime, originalTotalSamplePoints); %build new data filename
 Log.FunctionParameters = FunctionParameters; %store function parameters used in log file
 ```
-The series of `if` statements determines wheteher each model parameter has been estimated or was fixed within the optimisation. The appropriate result is then stored in the `Results` data structure. Variables `nll`, `funcCount`, `iterations`, `algorithm` and `message` are also stored in `Results`. All variables stored in the `FunctionParameters` are passed into the `Log` data structure. `Results` and `Log` are passed back to _fitting.m_ on completion of _sloanfit.m_.
+The series of `if` statements determines wheteher each model parameter has been estimated or was fixed within the optimisation. The appropriate result is then stored in `Results`. Variables `nll`, `funcCount`, `iterations`, `algorithm` and `message` are also stored in `Results`. All variables stored in the `FunctionParameters` are passed into the `Log` data structure. `Results` and `Log` are passed back to _fitting.m_ on completion of _sloanfit.m_.
 
 ## mlefit.m and mlecustomfit.m
 It is important to note that the maximum likelihood estimation of the unknown model parameters within _hubbellfit.m_ and _sloanfit.m_ is undertaken by the custom function _mlefit.m_. This, in turn, utilises _mlecustomfit.m_. Both functions are modifications made to the original MATLAB functions _mle.m_ and _mlecustom.m_ respectively, which are proprietary to MathWorks, Inc. The reason for making these modifications is to allow for the output of additional outputs from `fminsearch`. These outputs are the minimum negative loglikliehood value reached by the optimisation method stored in `nll` and the `output` data structure that holds information about the optimisation process. These modifications are intended for research and educational purposes only. __Functions _mlefit.m_ and _mlecustomfit.m_ must be created and saved in the same folder as _hubbellfit.m_ and _sloanfit.m_ for the Fitting Package to operate correctly__
 
-To create _mlefit.m_ a copy of _mle.m_ must first be made. _mle.m_ can be found in MATLAB program files with the stats toolbox. File path will look similar to _C:\Program Files\MATLAB\R2020b\toolbox\stats\stats\_. Save this copy as _mlefit.m_ within the _Fitting_ folder. In total only three lines are modified between _mle.m_ and _mlefit.m_. These are lines 1, 245 and 247. Line 1 referees to the function definition line, this is altered to include additional outputs `nll` and `output`. Lines 245 and 247 refer to calling the function associated with handling a user-defined distribution, these are modified to call _mlecustomfit.m_ instead of _mlecustom.m_ which passes the desired outputs. The modified lines of code are provided in order below:
+To create _mlefit.m_ a copy of _mle.m_ must first be made. _mle.m_ can be found in MATLAB program files with the stats toolbox. File path will look similar to _C:\Program Files\MATLAB\R2020b\toolbox\stats\stats\_. Save this copy as _mlefit.m_ within the _Fitting_ folder. In total only three lines are modified between _mle.m_ and _mlefit.m_. These are lines 1, 245 and 247. Line 1 refers to the function definition line, this is altered to include additional outputs `nll` and `output`. Lines 245 and 247 refer to calling the function associated with handling a user-defined distribution, these are modified to call _mlecustomfit.m_ instead of _mlecustom.m_ which passes the desired outputs. The modified lines of code are provided in order below:
 ```matlab
 function [phat, pci, nll, output] = mlefit(data,varargin) %%edited to include nll and output as output vectors
 ```
@@ -520,7 +520,7 @@ phat = mlecustomfit(data,varargin{:}); %%edited to run mlecustomfit
 [phat, pci, nll, output] = mlecustomfit(data,varargin{:}); %%edited to run mlecustomfit
 ```
 
-To create _mlecustomfit.m_ a copy of _mlecustom.m_ must first be made. _mlecustom.m_ can be found in MATLAB program files with the stats toolbox. File path will look similar to _C:\Program Files\MATLAB\R2020b\toolbox\stats\stats\private\_. Save this copy as _mlecustomfit.m_ within the _Fitting_ folder. In total only one line is modified between _mlecustom.m_ and _mlecustomfit.m_. This is line 1. Line 1 referees to the function definition line, this is altered to include additional outputs `nll` and `output`. The modified line of code is provided below:
+To create _mlecustomfit.m_ a copy of _mlecustom.m_ must first be made. _mlecustom.m_ can be found in MATLAB program files with the stats toolbox. File path will look similar to _C:\Program Files\MATLAB\R2020b\toolbox\stats\stats\private\_. Save this copy as _mlecustomfit.m_ within the _Fitting_ folder. In total only one line is modified between _mlecustom.m_ and _mlecustomfit.m_. This is line 1. Line 1 refers to the function definition line, this is altered to include additional outputs `nll` and `output`. The modified line of code is provided below:
 ```matlab
 function [phat, pci, nll, output] = mlecustomfit(data,varargin) %%edited to include nll and output as output vectors
 ```
