@@ -21,3 +21,9 @@ This spreadsheet holds all user input variables which must be defined for the pa
 Each sheet holds input variables for the specific script or function of the same name. A full list of all variables and descriptions of these variables are provided below:
 ![InputVariablesSimulation (1)](https://github.com/user-attachments/assets/e72965dc-cc8b-4a62-bf27-aa5b66fa7a9e)
 _Created in  https://BioRender.com_
+
+## simulation.m
+This script acts as the sole executable within the fitting package and is tasked with:
+1. __Loading input variables from sheet _simulation_ within _simulationParameters.xlsx_.__
+3. __Running the chosen function by the user (_hubbellsim_, _sloansim_).__
+4. __Saving data and log files__
