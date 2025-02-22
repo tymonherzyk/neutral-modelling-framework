@@ -151,4 +151,69 @@ Log.RunParameters.totalReplacements = replaceNo;
 Log.RunParameters.totalSamplePoints = i;
 ```
 
-The `Log` data structure, the data filename variable `dataFilename` and the `NS` array are passed back to the primary script after completion of the function.
+The `Log` data structure, the data filename variable `dataFilename` and the `NS` array are passed back to _simulation.m_ after completion of the function.
+
+## sloansim.m
+The _sloansim.m_ function simulates the change in the relative abundance of a single species within a community governed by the dynamics described by Sloan et al.'s near-neutral model [[2]](#2). The function begins by loading parameters from the _sloansim_ sheet within _simulationParameters.xlsx_. These parameters are stored locally in a data structure named `FunctionParameters` as shown below:
+```matlab
+importFilename = 'simulationParameters.xlsx'; %set import filename for loading parameters from user spreadsheet
+opts = detectImportOptions(importFilename); %set import settings for loading parameters from user spreadsheet
+opts = setvartype(opts,'char');
+opts.RowNamesRange = 'A2';
+opts.VariableNamesRange = 'B1';
+opts.DataRange = 'B2';
+opts.Sheet = 'sloansim';
+FunctionParametersTable = readtable(importFilename,opts); %load function parameters from user spreadsheet as table
+for i = 1:height(FunctionParametersTable) %change function parameters to correct data types
+    if strcmpi('number',FunctionParametersTable.Type{i}) 
+        FunctionParametersTable.Value{i} = sscanf(FunctionParametersTable.Value{i},'%f*');
+    end
+end
+FunctionParameters.nt = FunctionParametersTable.Value{1}; %store function parameters in data structure
+FunctionParameters.eta = FunctionParametersTable.Value{2};
+FunctionParameters.m = FunctionParametersTable.Value{3};
+FunctionParameters.p = FunctionParametersTable.Value{4};
+FunctionParameters.alpha = FunctionParametersTable.Value{5};
+FunctionParameters.sra = FunctionParametersTable.Value{6};
+```
+
+Before changes in relative abundance can be simulated some local variables must be defined. Firstly, the random number generator is initialised by setting its control based on input parameters `seed` and `generator`. As simulation occurs based on discrete replace evens the total number of events must be defined by dividing the desired simulation period `simtime` by the average time between replacement events `eta`. The array for holding the simulated data `NS` is then initialised and the starting abundance of the monitored species `NS(1,1)` is set using the variable `sra` defined by the user. These processes areachieved using the following code:
+```matlab
+randomSeed = rng(MainParameters.seed,MainParameters.generator); %set random seed
+replaceNo = MainParameters.simtime/FunctionParameters.eta; %calculate number of replacement events
+i = 1;
+NS = zeros(replaceNo+1, 2); %intialise NS
+NS(i,1) = FunctionParameters.sra*FunctionParameters.nt; %set starting value 
+```
+
+The function operates in distinct replacement events refering to a change in time of length `eta`. Each replacement event can envoke a possibility of three unique changes in the abundance of the monitored species: the abundance increases by an individual, stays the same, or decreases by an individual. The probability that each outcome will occur within a community is governed by the transitional probability equations relating to Sloan et al.'s neutral model. The abundace of the monitored species after each repalcement event is stored in `NS` alongside the time that has passed. This process is achieved using the following code:
+```matlab
+for i = 2:replaceNo+1 %for number of replacement events
+    ni = NS(i-1,1); %define current abundance value
+    prob1=((FunctionParameters.nt-ni)/FunctionParameters.nt)*((FunctionParameters.m*FunctionParameters.p)+(1+FunctionParameters.alpha)*(1-FunctionParameters.m)*(ni/(FunctionParameters.nt-1))); %calculate transitional probabilities
+    prob2=(ni/FunctionParameters.nt)*((FunctionParameters.m*(1-FunctionParameters.p))+(1-FunctionParameters.alpha)*(1-FunctionParameters.m)*((FunctionParameters.nt-ni)/(FunctionParameters.nt-1))); %calculate transitional probabilities
+    prob3=1-prob1-prob2; %calculate transitional probabilities
+    %Change abundance as required given where random number falls
+    x = rand(); %define random number
+    if x <= prob1
+        NS(i,1) = ni+1; %species abundance increases by 1
+    elseif x > prob1 && x <= prob1+prob2
+        NS(i,1) = ni-1; %species abundance decreases by 1
+    elseif x > prob1+prob2 && x <= prob1+prob2+prob3
+        NS(i,1) = ni; %species abundance stays the same
+    end
+    timeTaken = (i-1)*FunctionParameters.eta; %calculate and print current timestep
+    NS(i,2) = timeTaken; %store current time step
+    fprintf('>>>> Simulation Time: %.2f \n',timeTaken) %print current time step
+end
+```
+
+All function variables alongside, the total number of individual replacements, the total number of data points and the generator seed used, are then stored within a new data structure named `Log` as shown below:
+```matlab
+Log.FunctionParameters = FunctionParameters; %store parameters for log
+Log.RunParameters.randomSeed = randomSeed;
+Log.RunParameters.totalReplacements = replaceNo;
+Log.RunParameters.totalSamplePoints = i;
+```
+
+The `Log` data structure, the data filename variable `dataFilename` and the `NS` array are passed back to _simulation.m_ after completion of the function.
