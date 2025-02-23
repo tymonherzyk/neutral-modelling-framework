@@ -49,15 +49,24 @@ To install the framework:
 
 ## User guide
 The Simulation Package
-1. Open _simulationParameters.xlsx_.
-2. Edit input variables as desired. Below are a list of example variable values:
-  - __The simultion sheet__
-  - function - hubbellsim
-  - runs - 1
-  - simtime 100
-  - seed - shuffle
-  - generator - twister
-  - saveDataIdentifier - example
-  - saveDataPath - \Temp\
-  - saveLogPath - \Temp\
+1. Install the Simulation Package.
+2. Open _simulationParameters.xlsx_.
+3. Edit input variables as desired, or use default values.
+4. Save changes to _simulationParameters.xlsx_.
+5. Run _simulation.m_.
+
+The Sampling Package
+1. Install the Sampling Package.
+2. Open _samplingParameters.xlsx_.
+3. Edit input variables as desired, or use default values.
+4. Save changes to _samplingParameters.xlsx_.
+5. Run _sampling.m_.
+
+The Fitting Package
+1. Install the Fitting Package and create files _mlefit.m_ and _mlecustomfit.m_
+2. Open _fittingParameters.xlsx_.
+3. Edit input variables as desired, or use default values.
+4. Save changes to _fittingParameters.xlsx_.
+5. Run _fitting.m_.
+
 ## Data formatting
