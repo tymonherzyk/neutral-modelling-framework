@@ -11,11 +11,11 @@ The calibration of these models is achieved using the architecture shown below:
 Created in  https://BioRender.com_
 
 Users define the model to be calibrated alongside operational parameters within the _fittingParameters.xlsx_ spreadsheet. The primary script can then be executed (_fitting.m_) which facilitates the importing of user variables and prompts the user to select data files to use for the calibration. The function pertaining to the model chosen (_hubbelfit.m_ or _sloanfit.m_) is then run to facilitate the calibration of the model and estimation of unknown parameters. Two files, _results.m_ and _log.m_ are returned by the pacakge, where _results.m_ houses parameter estimates, while _log.m_ houses logged variables. These are saved in the location defined by the user. Below is an in-depth description of each of the files within this package:
-* [fittingParameters.xlsx](#fittingParameters.xlsx)
-* [fitting.m](#fitting.m)
-* [hubbellfit.m](#hubbellfit.m)
-* [sloanfit.m](#sloanfit.m)
-* [mlefit.m and mlecustomfit.m](#mlefit.m-and-mlecustomfit.m)
+* [fittingParameters.xlsx](#fittingparametersxlsx)
+* [fitting.m](#fittingm)
+* [hubbellfit.m](#hubbellfitm)
+* [sloanfit.m](#sloanfitm)
+* [mlefit.m and mlecustomfit.m](#mlefitm-and-mlecustomfitm)
 
 __IMPORTANT NOTE: files _mlefit.m_ and _mlecustomfit.m_ are required for the package to operate. These are not provided here as they are subject to copyright from The Mathworks, Inc (Copyright 1993-2012 The MathWorks, Inc). Instructions on how to make these files are provided towards the end of the README. Please refer to these before trying to operate the package.__
 
