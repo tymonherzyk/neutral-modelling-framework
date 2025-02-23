@@ -16,8 +16,18 @@ Users define the sampling regime to be used alongside operational parameters wit
 * [burst.m](#burst.m)
 
 ## samplingParameters.xlsx
+This spreadsheet holds all user input variables which must be defined for the package to operate. It is made up of three sheets:
+* __sampling__
+* __even__
+* __burst__
+
+Each sheet holds input variables for the specific script or function of the same name. A full list of all variables and descriptions of these variables are provided below:
+![InputVariablesSampling (1)](https://github.com/user-attachments/assets/2d564368-ee6d-4fd8-b559-1c7f663e9416)
+_Created in  https://BioRender.com_
 
 ## sampling.m
+
+
 
 ## even.m
 
