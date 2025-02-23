@@ -37,8 +37,8 @@ To install the framework:
 1. Navigate to the GitHub repository [page](https://github.com/tymonherzyk/neutral-modelling-framework).
 2. Click the green "Code" button.
 3. Select "Download ZIP".
-4. Extract to preffered location
-5. Create file _mlefit.m_ and _mlecustomfit.m_ and store in the Fitting folder. How to create these files is explained [here](https://github.com/tymonherzyk/neutral-modelling-framework/tree/main/Fitting)
+4. Extract to preferred. location
+5. Create files _mlefit.m_ and _mlecustomfit.m_ and store in the Fitting folder. How to create these files is explained [here](https://github.com/tymonherzyk/neutral-modelling-framework/tree/main/Fitting)
 
 ## User guide
 
