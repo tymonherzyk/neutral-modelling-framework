@@ -10,7 +10,11 @@ The architecture of this package is given below:
 ![Copy of Framework_architecture2](https://github.com/user-attachments/assets/a899504b-72f3-4155-8a40-9d161e42f63d)
 _Created in  https://BioRender.com_
 
-Users define the model used to govern community dyanmics alongside operational parameters within the _simulationParameters.xlsx_ spreadsheet. The primary script can then be executed (_simulation.m_) which facilitates the importing of user variables and executes the function pertaining to the model chosen (_hubbelsim.m_ or _sloansim.m_) to facilitate the simulation of the species' relative abundance. Two files are returned by the pacakge, where one is the data file that holds the change in relative abundance of the monitored species, while the other is a log file that houses logged variables. These are saved in the location defined by the user. Below is an in-depth description of each of the files within this package. 
+Users define the model used to govern community dyanmics alongside operational parameters within the _simulationParameters.xlsx_ spreadsheet. The primary script can then be executed (_simulation.m_) which facilitates the importing of user variables and executes the function pertaining to the model chosen (_hubbelsim.m_ or _sloansim.m_) to facilitate the simulation of the species' relative abundance. Two files are returned by the pacakge, where one is the data file that holds the change in relative abundance of the monitored species, while the other is a log file that houses logged variables. These are saved in the location defined by the user. Below is an in-depth description of each of the files within this package:
+* [simulationParameters.xlsx](#simulationParameters.xlsx)
+* [simulation.m](#simulation.m)
+* [hubbellsim.m](#hubbellsim.m)
+* [sloansim.m](#sloansim.m)
 
 ## simulationParameters.xlsx
 This spreadsheet holds all user input variables which must be defined for the package to operate. It is made up of three sheets:
@@ -217,3 +221,11 @@ Log.RunParameters.totalSamplePoints = i;
 ```
 
 The `Log` data structure, the data filename variable `dataFilename` and the `NS` array are passed back to _simulation.m_ after completion of the function.
+
+## References
+<a id="1">[1]</a> 
+Hubbell, S. (2001). The Unified Neutral Theory of Biodiversity and Biogeography, _Monographs in Population Biology_ (Vol. 32).
+
+<a id="2">[2]</a> 
+Sloan, W. T., Lunn, M., Woodcock, S., Head, I. M., Nee, S., & Curtis, T. P. (2006). Quantifying the roles of im-
+migration and chance in shaping prokaryote community structure, _Environmental Microbiology_, 8(4), 732–740. 
