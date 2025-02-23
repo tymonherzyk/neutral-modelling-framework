@@ -70,3 +70,8 @@ The Fitting Package
 5. Run _fitting.m_.
 
 ## Data formatting
+External data can be sampled and used for model calibration using this the Sampling Package and Fitting package respectivley. To use external data, the data must be saved in a spcefic format this is provided below:
+1. Data must be stored as a .mat data file.
+2. This data file must be an array with only two columns. The first that stores the relative abundance of the monitored species. The second stores the time passed since the first sample.
+3. The array must be name 'NS'.
+4. The data file must follow the convention: (custom string)\_T(total time in hours)\_S(total number of samples).mat. For example testrun1\_T1000_S2500001.mat
