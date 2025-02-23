@@ -1,100 +1,80 @@
 %burst.m
 
-%Author: Tymon Herzyk
-%Last Editied: 21/08/2024
+%Author: Tymon Alexander Herzyk
+%Github: 
+%Last Editied: 21/02/2025
 %Version: 1.0
 %MATLAB Version: R2020b
-%License:
+%License: https://creativecommons.org/licenses/by/4.0/
 
 
 %START BURST%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function [NS,dataFilename,Log] = burst(MainParameters, loadPath)
-%Print start message
-fprintf('BURST STARTED \n')
+function [NS,dataFilename,Log] = burst(MainParameters, loadPath) %start function
+fprintf('BURST STARTED \n') %print start message
 %START SETUP%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Set import settings for loading function parameters from user spreadsheet
-importFilename = 'samplingParameters.xlsx';
-opts = detectImportOptions(importFilename);
+importFilename = 'samplingParameters.xlsx'; %set import filename for loading parameters from user spreadsheet
+opts = detectImportOptions(importFilename); %set import settings for loading parameters from user spreadsheet
 opts = setvartype(opts,'char');
 opts.RowNamesRange = 'A2';
 opts.VariableNamesRange = 'B1';
 opts.DataRange = 'B2';
 opts.Sheet = 'burst';
-%Load function parameters from user spreadsheet as table
-FunctionParametersTable = readtable(importFilename,opts);
-%Change function parameters to correct data types
-for i = 1:height(FunctionParametersTable)
+FunctionParametersTable = readtable(importFilename,opts); %load function parameters from user spreadsheet as table
+for i = 1:height(FunctionParametersTable) %change function parameters to correct data types
     if strcmpi('number',FunctionParametersTable.Type{i}) 
         FunctionParametersTable.Value{i} = sscanf(FunctionParametersTable.Value{i},'%f*');
     end
 end
-%Store function parameters in local data structure
-FunctionParameters.startTime = FunctionParametersTable.Value{1};
+FunctionParameters.startTime = FunctionParametersTable.Value{1}; %store function parameters in data structure
 FunctionParameters.endTime = FunctionParametersTable.Value{2};
 FunctionParameters.burstFrequency = FunctionParametersTable.Value{3};
 FunctionParameters.burstSize = FunctionParametersTable.Value{4};
 FunctionParameters.sampleFrequency = FunctionParametersTable.Value{5};
 %END SETUP%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %START MAIN BODY%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Load NS data
-load(loadPath, 'NS');
-originalNS = NS;
+load(loadPath, 'NS'); %load data
+originalNS = NS; %save copy of data
 clear NS;
-%Extract file naming identifier
-originalFilename = extractAfter(loadPath,MainParameters.userFilePath);
+originalFilename = extractAfter(loadPath,MainParameters.userFilePath); %extract file name
 originalDataIdentifier = extractBefore(originalFilename,'_');
-%Calculate indexing variables
-indexStartTimeArray = find(originalNS(:,2)>=FunctionParameters.startTime);
-indexStartTime = indexStartTimeArray(1,1);
-indexEndTimeArray = find(originalNS(:,2)<=FunctionParameters.endTime);
-indexEndTime = indexEndTimeArray(end,1);
-indexSampleFrequency = height(find(originalNS(:,2)>0 & originalNS(:,2)<=FunctionParameters.sampleFrequency));
-indexBurstFrequency = height(find(originalNS(:,2)>0 & originalNS(:,2)<=FunctionParameters.burstFrequency));
-indexBurstSize = FunctionParameters.burstSize*indexSampleFrequency;
+indexStartTimeArray = find(originalNS(:,2)>=FunctionParameters.startTime); %find sampling start point
+indexStartTime = indexStartTimeArray(1,1); %set sampling start point
+indexEndTimeArray = find(originalNS(:,2)<=FunctionParameters.endTime); %find sampling end point
+indexEndTime = indexEndTimeArray(end,1); %set sampling end point
+indexSampleFrequency = height(find(originalNS(:,2)>0 & originalNS(:,2)<=FunctionParameters.sampleFrequency)); %calculate sampling frequency
+indexBurstFrequency = height(find(originalNS(:,2)>0 & originalNS(:,2)<=FunctionParameters.burstFrequency)); %calculate burst frequency
+indexBurstSize = FunctionParameters.burstSize*indexSampleFrequency; %calculate burst size
 count = 0;
 burstTotal = 0;
-for i = indexStartTime:indexBurstFrequency:indexEndTime
+for i = indexStartTime:indexBurstFrequency:indexEndTime %calculate total number of bursts
     indexBurstTotal = indexStartTime+(indexBurstFrequency*count)+indexBurstSize;
     if indexBurstTotal <= indexEndTime
         burstTotal=burstTotal+1;
     end
     count=count+1;
 end
-%Initialise NS
- NSTotal = burstTotal*FunctionParameters.burstSize;
+ NSTotal = burstTotal*FunctionParameters.burstSize; %calculate total number of sample points
  NS(NSTotal,:) = 0;
  NSStart = 1;
-%For each burst
-for i = 1:burstTotal
-    %Calculate start and end point indexing
-    indexStartBurst = indexStartTime+(indexBurstFrequency*(i-1));
+for i = 1:burstTotal %for each burst
+    indexStartBurst = indexStartTime+(indexBurstFrequency*(i-1)); %calculate start and end points
     indexEndBurst = indexStartBurst+indexBurstSize-1;
-    %Calculate NS end point
     NSEnd = NSStart+FunctionParameters.burstSize-1;
-    %Copy data points from original NS to new array
-    NS(NSStart:NSEnd,1) = originalNS(indexStartBurst:indexSampleFrequency:indexEndBurst,1);
-    NS(NSStart:NSEnd,2) = originalNS(indexStartBurst:indexSampleFrequency:indexEndBurst,2);
-    %Calculate NS start point for next burst
-    NSStart = NSEnd+1;
+    NS(NSStart:NSEnd,1) = originalNS(indexStartBurst:indexSampleFrequency:indexEndBurst,1); %copy desired data points from original NS to new array
+    NS(NSStart:NSEnd,2) = originalNS(indexStartBurst:indexSampleFrequency:indexEndBurst,2); %copy desired time points from original NS to new array
+    NSStart = NSEnd+1; %set start point for next burst
 end
-%Calculate total samples and total time
-totalSamples = height(NS);
-totalTime = NS(end,2)-NS(1,2);
-%Check for decimal places in total time
-dpCheck = regexp(num2str(totalTime),'\.','split');
-%Set number of sig figs for total time
-if length(dpCheck) == 2
+totalSamples = height(NS); %calculate total samples
+totalTime = NS(end,2)-NS(1,2); %calculate total time
+dpCheck = regexp(num2str(totalTime),'\.','split'); %check for decimal places
+if length(dpCheck) == 2 %set number of sig figs
     dp = length(dpCheck{2});
 else
     dp = 0;
 end
-%Create data filename
-dataFilename = sprintf('%s%s_T%.*f_S%d.mat',originalDataIdentifier, MainParameters.additionalIdentifier,dp, totalTime, totalSamples);
-%START LOGGING%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Add any required variables to log
-Log.FunctionParameters = FunctionParameters;
-%END LOGGING%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+dataFilename = sprintf('%s%s_T%.*f_S%d.mat',originalDataIdentifier, MainParameters.additionalIdentifier,dp, totalTime, totalSamples); %create data filename
+Log.FunctionParameters = FunctionParameters; %log function paramaters
 %END MAIN BODY%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-fprintf('BURST FINISHED \n')
+fprintf('BURST FINISHED \n') %print end message
 end
 %END BURST%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
