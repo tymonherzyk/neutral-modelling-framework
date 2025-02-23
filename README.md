@@ -17,9 +17,9 @@ Code for each of these packages is provided in respective folders and descriptio
 
 Provided below is additonal information on:
 * [Framework architecture](#Framework-architecture)
-* Installation
-* User guide
-* Data formatting
+* [Installation](#Installation)
+* [User guide](#User-guide)
+* [Data formatting](#Data-formatting)
 
 ## Framework architecture
 The figure below lays out the overall architecture of the framework developed. The three dashed boxes indicate the remit of each package, the primary executable for each package is highlighted in the centre of these boxes. Pathways or files outwith the dashed boxes represent areas where user interaction is required. The movement of information within the framework is depicted using solid arrows, file names and types are indicated by coloured tags and key variables are portrayed through relevant abbreviations contained in clear tags. User input variables, required for the operation of each package, are stored in associated spreadsheets, these are represented by files _simulationParameters.xlsx_, _samplingParameters.xlsx_ and _fittingParameters.xlsx_.
@@ -31,3 +31,9 @@ _Created in https://BioRender.com_
 The primary scripts are _simulation.m_, _sampling.m_ and _fitting.m_. The first task of these scripts is to load associated input variables from their corresponding sheet within each package spreadsheet (this process is marked as 1). For both _sampling.m_ and _fitting.m_ data files are also required, the user is prompted to select these files when the associated script is executed (this process is marked as 2). Once input variables and data files have been successfully imported, the functionality of the package is delegated to the relevant function (this proces is marked as 3). The choice of function is demonstrated through the 'or' operator within each package. The number of times a function is run is represented by a circular arrow, with the variable govenrning this highlighted. Functions load required input variables from their associated package spreadsheet, only the sheet pertaining to the function called is accessed. After execution of the relevant function outputs are passed back to the primary script which are then saved in a user defined location (this process is marked as 4).
 
 The compartmentalisation of the code into separate packages within this framework allows users to tailor workflows as required. For example, data obtained from the Simulation Package can be further processed through the Sampling Package or passed directly to the Fitting Package. The segregation of package functionality acts to disentangle dependencies between portions of code and allows for standalone development. The partitioning of input variables also promotes independence across packages and functions and by only loading specific sheets, errors resulting from the crossover of variables are negated. The architecture of the framework has been engineered with transparency, usability and adaptability at the fore of the development process. External data can be incoporated into the framework and processed through the Sampling Package and the Fitting Package, please refer to section data formatting for information on how to achieve this.
+
+## Installation
+
+## User guide
+
+## Data formatting
