@@ -4,14 +4,14 @@ This framework was developed to facilitate the research presented in the thesis:
 
 The framework is capable of producing relative abundance time series for a single monitored species from differing sets of community structuring processes, sampling the produced time series and calibrating common neutral models to these data sets with the purpose of producing estimates for distinct model parameters. The framework is split into three packages to achieve this, with the functionality of each package highlighted below:
 * [__Simulation__](https://github.com/tymonherzyk/neutral-modelling-framework/tree/main/Simulation) - simulates a relative abundance time series of a single species within a community using a chosen model:
-  - Hubbell's neutral model - Community dynamics are simulated based on random and discrete births, deaths and immigration as described by Hubbell's neutral model 
-  - Sloan's near-neutral model - Community dynamics are simulated based on random and discrete births, deaths, immigration and local selection as described by Sloan et al.'s near neutral model 
+  - Hubbell's neutral model - Community dynamics are simulated based on random and discrete births, deaths and immigration as described by Hubbell's neutral model [[1]](#1). 
+  - Sloan's near-neutral model - Community dynamics are simulated based on random and discrete births, deaths, immigration and local selection as described by Sloan et al.'s near neutral model [[2]](#2).
 * [__Sampling__](https://github.com/tymonherzyk/neutral-modelling-framework/tree/main/Sampling) - samples single species relative abundace time series using a regime chosen by the user:
   - Even sampling - samples evenly between a chosen start and end point with a chosen frequency.
   - Burst sampling - samples in bursts between chosen start and end point. Burst frequency, lentgh and the frequency of samples within a burst can also be set by the user.
 * [__Fitting__ ](https://github.com/tymonherzyk/neutral-modelling-framework/tree/main/Fitting)- fits a chosen model to single species relative abundace time series using maximum likelihood estimation to provide estimate of distinct model parameters:
-  - Hubbell's neutral model - Calibrates the continous version of Hubbell's neutral model providing estimates for each distinct model parameter ($N_T$, $\eta$, $m$ and $p$).
-  - Sloan et al.'s near-neutral model - Calibrates the continous version of Sloan et al.'s near-neutral model providing estimates for each distinct model parameter ($N_T$, $\eta$, $m$, $p$ and $\alpha$).
+  - Hubbell's neutral model - Calibrates the continous version of Hubbell's neutral model [[1]](#1) providing estimates for each distinct model parameter ($N_T$, $\eta$, $m$ and $p$).
+  - Sloan et al.'s near-neutral model - Calibrates the continous version of Sloan et al.'s near-neutral model [[2]](#2) providing estimates for each distinct model parameter ($N_T$, $\eta$, $m$, $p$ and $\alpha$).
 
 Code for each of these packages is provided in respective folders and descriptions of how each package operates is provided in relative README.md files. All scripts and functions within these packages were written using MATLAB version R2020b in accordance with the academic license provided by the University of Glasgow. 
 
@@ -77,3 +77,11 @@ External data can be sampled and used for model calibration using this the Sampl
 2. This data file must be an array with only two columns. The first that stores the relative abundance of the monitored species. The second stores the time passed since the first sample.
 3. The array must be name 'NS'.
 4. The data file must follow the naming convention: (custom string)\_T(total time in hours)\_S(total number of samples).mat. For example, testrun1\_T1000_S2500001.mat
+
+## References
+<a id="1">[1]</a> 
+Hubbell, S. (2001). The Unified Neutral Theory of Biodiversity and Biogeography, _Monographs in Population Biology_ (Vol. 32).
+
+<a id="2">[2]</a> 
+Sloan, W. T., Lunn, M., Woodcock, S., Head, I. M., Nee, S., & Curtis, T. P. (2006). Quantifying the roles of im-
+migration and chance in shaping prokaryote community structure, _Environmental Microbiology_, 8(4), 732–740. 
