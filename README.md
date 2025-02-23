@@ -33,6 +33,12 @@ The primary scripts are _simulation.m_, _sampling.m_ and _fitting.m_. The first 
 The compartmentalisation of the code into separate packages within this framework allows users to tailor workflows as required. For example, data obtained from the Simulation Package can be further processed through the Sampling Package or passed directly to the Fitting Package. The segregation of package functionality acts to disentangle dependencies between portions of code and allows for standalone development. The partitioning of input variables also promotes independence across packages and functions and by only loading specific sheets, errors resulting from the crossover of variables are negated. The architecture of the framework has been engineered with transparency, usability and adaptability at the fore of the development process. External data can be incoporated into the framework and processed through the Sampling Package and the Fitting Package, please refer to section data formatting for information on how to achieve this.
 
 ## Installation
+To install the framework:
+1. Navigate to the GitHub repository [page](https://github.com/tymonherzyk/neutral-modelling-framework).
+2. Click the green "Code" button.
+3. Select "Download ZIP".
+4. Extract to preffered location
+5. Create file _mlefit.m_ and _mlecustomfit.m_ and store in the Fitting folder. How to create these files is explained [here](https://github.com/tymonherzyk/neutral-modelling-framework/tree/main/Fitting)
 
 ## User guide
 
