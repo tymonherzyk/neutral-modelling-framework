@@ -22,6 +22,8 @@ Provided below is additonal information on:
 * [User guide](#User-guide)
 * [Data formatting](#Data-formatting)
 
+For further information or help regarding this framework feel free to reach out to Tymon Alexander Herzyk at 2140584h@student.gla.ac.uk
+
 ## Framework architecture
 The figure below lays out the overall architecture of the framework developed. The three dashed boxes indicate the remit of each package, the primary executable for each package is highlighted in the centre of these boxes. Pathways or files outwith the dashed boxes represent areas where user interaction is required. The movement of information within the framework is depicted using solid arrows, file names and types are indicated by coloured tags and key variables are portrayed through relevant abbreviations contained in clear tags. User input variables, required for the operation of each package, are stored in associated spreadsheets, these are represented by files _simulationParameters.xlsx_, _samplingParameters.xlsx_ and _fittingParameters.xlsx_.
 
@@ -70,7 +72,7 @@ The Fitting Package
 5. Run _fitting.m_.
 
 ## Data formatting
-External data can be sampled and used for model calibration using this the Sampling Package and Fitting package respectivley. To use external data, the data must be saved in a spcefic format this is provided below:
+External data can be sampled and used for model calibration using this the Sampling Package and Fitting Package respectivley. To use external data, the data must be saved in a spcefic format this is provided below:
 1. Data must be stored as a .mat data file.
 2. This data file must be an array with only two columns. The first that stores the relative abundance of the monitored species. The second stores the time passed since the first sample.
 3. The array must be name 'NS'.
