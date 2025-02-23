@@ -11,7 +11,7 @@ The architecture of this package is given below:
 _Created in  https://BioRender.com_
 
 Users define the model used to govern community dyanmics alongside operational parameters within the _simulationParameters.xlsx_ spreadsheet. The primary script can then be executed (_simulation.m_) which facilitates the importing of user variables and executes the function pertaining to the model chosen (_hubbelsim.m_ or _sloansim.m_) to facilitate the simulation of the species' relative abundance. Two files are returned by the pacakge, where one is the data file that holds the relative abundance of the monitored species, while the other is a log file that houses logged variables. These are saved in the location defined by the user. Below is an in-depth description of each of the files within this package:
-* [simulationParameters.xlsx](#simulationParameters.xlsx)
+* [simulationParameters.xlsx](#simulationparameters.xlsx)
 * [simulation.m](#simulation.m)
 * [hubbellsim.m](#hubbellsim.m)
 * [sloansim.m](#sloansim.m)
