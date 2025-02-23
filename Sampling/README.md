@@ -10,10 +10,10 @@ The architecture of this package is given below:
 _Created in  https://BioRender.com_
 
 Users define the sampling regime to be used alongside operational parameters within the _samplingParameters.xlsx_ spreadsheet. The primary script can then be executed (_sampling.m_) which facilitates the importing of user variables and executes the function pertaining to the regime chosen (_even.m_ or _burst.m_). After sampling has been undertaken two files are returned by the pacakge, where one is the data file that holds the sampled relative abundance of the monitored species, while the other is a log file that houses logged variables. These are saved in the location defined by the user. Below is an in-depth description of each of the files within this package:
-* [samplingParameters.xlsx](#samplingParameters.xlsx)
-* [sampling.m](#sampling.m)
-* [even.m](#even.m)
-* [burst.m](#burst.m)
+* [samplingParameters.xlsx](#samplingparametersxlsx)
+* [sampling.m](#samplingm)
+* [even.m](#evenm)
+* [burst.m](#burstm)
 
 ## samplingParameters.xlsx
 This spreadsheet holds all user input variables which must be defined for the package to operate. It is made up of three sheets:
