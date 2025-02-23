@@ -49,5 +49,15 @@ To install the framework:
 
 ## User guide
 The Simulation Package
-1. Open 
+1. Open _simulationParameters.xlsx_.
+2. Edit input variables as desired. Below are a list of example variable values:
+  - __The simultion sheet__
+  - function - hubbellsim
+  - runs - 1
+  - simtime 100
+  - seed - shuffle
+  - generator - twister
+  - saveDataIdentifier - example
+  - saveDataPath - \Temp\
+  - saveLogPath - \Temp\
 ## Data formatting
