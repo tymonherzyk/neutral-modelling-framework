@@ -3,13 +3,13 @@
 This framework was developed to facilitate the research presented in the thesis: "_Towards a general theory within wastewater treatment: computational and experimental examples utilising fundamental laws to describe microbial community structure in wastewater treatment systems_" written by Tymon Alexander Herzyk, submitted in fulfilment of the requirements for the Degree of Doctor of Philosophy in Civil Engineering, at the School of Engineering, College of Science and Engineering, University of Glasgow. The framework developed is shared here under the Creative Commons Attribution 4.0 International License (CC-BY) to offer transparency and allow others to make use of the framework developed for further research.
 
 The framework is capable of producing relative abundance time series for a single monitored species from differing sets of community structuring processes, sampling the produced time series and calibrating common neutral models to these data sets with the purpose of producing estimates for distinct model parameters. The framework is split into three packages to achieve this, with the functionality of each package highlighted below:
-* __Simulation__ - simulates a relative abundance time series of a single species within a community using a chosen model:
+* [__Simulation__](https://github.com/tymonherzyk/neutral-modelling-framework/tree/main/Simulation) - simulates a relative abundance time series of a single species within a community using a chosen model:
   - Hubbell's neutral model - Community dynamics are simulated based on random and discrete births, deaths and immigration as described by Hubbell's neutral model 
   - Sloan's near-neutral model - Community dynamics are simulated based on random and discrete births, deaths, immigration and local selection as described by Sloan et al.'s near neutral model 
-* __Sampling__ - samples single species relative abundace time series using a regime chosen by the user:
+* [__Sampling__](https://github.com/tymonherzyk/neutral-modelling-framework/tree/main/Sampling) - samples single species relative abundace time series using a regime chosen by the user:
   - Even sampling - samples evenly between a chosen start and end point with a chosen frequency.
   - Burst sampling - samples in bursts between chosen start and end point. Burst frequency, lentgh and the frequency of samples within a burst can also be set by the user.
-* __Fitting__ - fits a chosen model to single species relative abundace time series using maximum likelihood estimation to provide estimate of distinct model parameters:
+* [__Fitting__ ](https://github.com/tymonherzyk/neutral-modelling-framework/tree/main/Fitting)- fits a chosen model to single species relative abundace time series using maximum likelihood estimation to provide estimate of distinct model parameters:
   - Hubbell's neutral model - Calibrates the continous version of Hubbell's neutral model providing estimates for each distinct model parameter ($N_T$, $\eta$, $m$ and $p$).
   - Sloan et al.'s near-neutral model - Calibrates the continous version of Sloan et al.'s near-neutral model providing estimates for each distinct model parameter ($N_T$, $\eta$, $m$, $p$ and $\alpha$).
 
@@ -17,6 +17,7 @@ Code for each of these packages is provided in respective folders and descriptio
 
 Provided below is additonal information on:
 * [Framework architecture](#Framework-architecture)
+* [Prerequisites](#Prerequisites)
 * [Installation](#Installation)
 * [User guide](#User-guide)
 * [Data formatting](#Data-formatting)
@@ -32,6 +33,12 @@ The primary scripts are _simulation.m_, _sampling.m_ and _fitting.m_. The first 
 
 The compartmentalisation of the code into separate packages within this framework allows users to tailor workflows as required. For example, data obtained from the Simulation Package can be further processed through the Sampling Package or passed directly to the Fitting Package. The segregation of package functionality acts to disentangle dependencies between portions of code and allows for standalone development. The partitioning of input variables also promotes independence across packages and functions and by only loading specific sheets, errors resulting from the crossover of variables are negated. The architecture of the framework has been engineered with transparency, usability and adaptability at the fore of the development process. External data can be incoporated into the framework and processed through the Sampling Package and the Fitting Package, please refer to section data formatting for information on how to achieve this.
 
+## Prerequisites
+The prerequisites to operating this framework are as follows:
+1. MATLAB version R2020b or above
+2. Statistics and Machine Learning Toolbox for MATLAB
+3. Software for accessing and editing .xlsx files
+
 ## Installation
 To install the framework:
 1. Navigate to the GitHub repository [page](https://github.com/tymonherzyk/neutral-modelling-framework).
@@ -41,5 +48,6 @@ To install the framework:
 5. Create files _mlefit.m_ and _mlecustomfit.m_ and store in the Fitting folder. How to create these files is explained [here](https://github.com/tymonherzyk/neutral-modelling-framework/tree/main/Fitting)
 
 ## User guide
-
+The Simulation Package
+1. Open 
 ## Data formatting
